@@ -3,7 +3,7 @@ extern int Driver_Catapult_Speed;
 extern int Catapult_Down_Pos;
 extern int Catapult_Auto_Speed;
 extern int Catapult_Wait_Time;
-extern int CataPort_PID[3];
+extern double CataPort_PID[3];
 bool shoot_cata = false;
 void Setcataport(int power)
 {
@@ -42,14 +42,14 @@ void AutoCatapult()
     pros::delay(Catapult_Wait_Time);
     stopCatapult();
     double prevError = rotation_sensor.get_position() - Catapult_Down_Pos;
-    while(!(rotation_sensor.get_angle() > 4400 && rotation_sensor.get_angle() < 5000 ))
+    while(!(rotation_sensor.get_angle() > Catapult_Down_Pos-200 && rotation_sensor.get_angle() < Catapult_Down_Pos+3000 ))
     {
         double Error = rotation_sensor.get_position() - Catapult_Down_Pos;
         double accumError = accumError + Error;
-        double Power = Error*CataPort_PID[1] + accumError*CataPort_PID[2] + (Error-prevError)*CataPort_PID[3];
+        double Power = Error*CataPort_PID[0] + accumError*CataPort_PID[1] + (Error-prevError)*CataPort_PID[2];
         prevError = Error;
-        Setcataport(Power);
-        pros::delay(20);
+        Setcataport(fabs(Power));
+        pros::delay(6);
     }
     stopCatapult();
 }

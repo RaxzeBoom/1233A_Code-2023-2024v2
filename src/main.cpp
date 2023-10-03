@@ -25,7 +25,10 @@ void on_center_button() {
 void initialize() {
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "Hello PROS User!");
-
+	rotation_sensor.reset_position();
+	rotation_sensor.reset();
+	rotation_sensor.set_data_rate(5);
+	rotation_sensor.set_position(0);
 	pros::lcd::register_btn1_cb(on_center_button);
 	
 }
@@ -80,12 +83,20 @@ void my_task_fn(void* param) {
      }
  }
 void opcontrol() {
+	Change_DT_Brake(1);
+	Catapult.set_brake_mode(MOTOR_BRAKE_COAST);
+	
 	pros::Task  my_task(my_task_fn);
-	rotation_sensor.reset_position();
+
 	while (true) {
 		Basic_Control();
 		setCatapultMotors();
 		Driver_Intake();
+		//Driver_AutoCatapult();
+		Wings_Driver_Control();
+		Hang_Driver_Control();
+		Intake_Lift_Driver_Control();
+
 		pros::lcd::clear();
 		pros::lcd::print(1, "Cata_Pos %d", rotation_sensor.get_angle());
 		pros::delay(20);

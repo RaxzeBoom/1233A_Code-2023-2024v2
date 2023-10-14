@@ -5,18 +5,18 @@ int Auto_Num = 1;
 void Draw_Buttons()
 {
     pros::screen::set_pen(COLOR_RED);
-    //Makes 3 top rectangles that are 50/50 pixels
-    pros::screen::fill_rect(10,10,60,60);
+    //Makes 3 top rectangles that are 50 by 60 pixels
+    pros::screen::fill_rect(10,10,70,60);
     pros::screen::set_pen(COLOR_BLUE);
     pros::screen::fill_rect(215,10,275,60);
     pros::screen::set_pen(COLOR_GRAY);
     pros::screen::fill_rect(410,10,470,60);
-    //makes 3 rectangles that are below the top three
+    //makes 3 rectangles that are below the top three that are 50 by 100 pixels
     pros::screen::set_pen(COLOR_BLACK);
     pros::screen::fill_rect(10,110,110,160);
     pros::screen::fill_rect(190,110,290,160);
     pros::screen::fill_rect(370,110,470,160);
-    //makes 3 rectangles that are below the middles ones three
+    //makes 3 rectangles that are below the middles ones three that are 50 by 100 pixels
     pros::screen::fill_rect(10,180,110,230);
     pros::screen::fill_rect(190,180,290,230);
     pros::screen::fill_rect(370,180,470,230);
@@ -35,7 +35,7 @@ void Red_Auto_Text()
     pros::screen::print(pros::E_TEXT_SMALL,372,180,"Auto 6 ");
     //Redo the top three Rectangles
     pros::screen::set_pen(COLOR_RED);
-    pros::screen::fill_rect(10,10,60,60);
+    pros::screen::fill_rect(10,10,70,60);
     pros::screen::set_pen(COLOR_BLUE);
     pros::screen::fill_rect(215,10,275,60);
     pros::screen::set_pen(COLOR_GRAY);
@@ -56,7 +56,7 @@ void Blue_Auto_Text()
     pros::screen::print(pros::E_TEXT_SMALL,372,180,"Auto 12");
     //Redo the top three Rectangles
     pros::screen::set_pen(COLOR_RED);
-    pros::screen::fill_rect(10,10,60,60);
+    pros::screen::fill_rect(10,10,70,60);
     pros::screen::set_pen(COLOR_BLUE);
     pros::screen::fill_rect(215,10,275,60);
     pros::screen::set_pen(COLOR_GRAY);
@@ -77,7 +77,7 @@ void Other_Auto_Text()
     pros::screen::print(pros::E_TEXT_SMALL,372,180,"Auto 18");
     //Redo the top three Rectangles
     pros::screen::set_pen(COLOR_RED);
-    pros::screen::fill_rect(10,10,60,60);
+    pros::screen::fill_rect(10,10,70,60);
     pros::screen::set_pen(COLOR_BLUE);
     pros::screen::fill_rect(215,10,275,60);
     pros::screen::set_pen(COLOR_GRAY);

@@ -1,36 +1,25 @@
 #include "main.h"
 
 /**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-	}
-}
-
-/**
  * Runs initialization code. This occurs as soon as the program is started.
  *
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
+void UI_Touch() {
+	 pros::screen_touch_status_s_t status = pros::screen::touch_status();
+	 pros::screen::set_pen(COLOR_GREEN);
+	 Touch_Checker(status.x, status.y);
+ }
 void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
+	pros::delay(300); 
+	Start_UI();
+	pros::screen::touch_callback(UI_Touch, TOUCH_PRESSED);
+	Auto_IMU.reset();
 	rotation_sensor.reset_position();
 	rotation_sensor.reset();
 	rotation_sensor.set_data_rate(5);
 	rotation_sensor.set_position(0);
-	pros::lcd::register_btn1_cb(on_center_button);
-	
 }
 
 /**
@@ -62,7 +51,11 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+
+	//AutoDrive(24,100);
+	Auto_Turn(90,100);
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -80,15 +73,16 @@ void autonomous() {}
 void my_task_fn(void* param) {
      while(true){
       Driver_AutoCatapult();
+	  pros::delay(20);
      }
  }
 void opcontrol() {
 	Change_DT_Brake(1);
 	Catapult.set_brake_mode(MOTOR_BRAKE_COAST);
-	
 	pros::Task  my_task(my_task_fn);
-
+	
 	while (true) {
+		 
 		Basic_Control();
 		setCatapultMotors();
 		Driver_Intake();
@@ -96,9 +90,6 @@ void opcontrol() {
 		Wings_Driver_Control();
 		Hang_Driver_Control();
 		Intake_Lift_Driver_Control();
-
-		pros::lcd::clear();
-		pros::lcd::print(1, "Cata_Pos %d", rotation_sensor.get_angle());
-		pros::delay(20);
+        pros::delay(20);
 	}
 }

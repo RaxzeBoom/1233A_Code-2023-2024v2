@@ -55,11 +55,11 @@ void ADrive()
     SetLeftDTPower(left);
 }
 //1 is Coast 2 is Brake 3 is Hold   
-void Change_DT_Brake(char Brake_Type)
+void Change_DT_Brake(int Brake_Type)
 {
   switch (Brake_Type)
   {
-   case 'c':
+   case 1:
     L1Drive.set_brake_mode(MOTOR_BRAKE_COAST);
     L2Drive.set_brake_mode(MOTOR_BRAKE_COAST);
     L3Drive.set_brake_mode(MOTOR_BRAKE_COAST);
@@ -67,7 +67,7 @@ void Change_DT_Brake(char Brake_Type)
     R2Drive.set_brake_mode(MOTOR_BRAKE_COAST);
     R3Drive.set_brake_mode(MOTOR_BRAKE_COAST);
     break;
-   case 'b':
+   case 2:
     L1Drive.set_brake_mode(MOTOR_BRAKE_BRAKE);
     L2Drive.set_brake_mode(MOTOR_BRAKE_BRAKE);
     L3Drive.set_brake_mode(MOTOR_BRAKE_BRAKE);
@@ -75,7 +75,7 @@ void Change_DT_Brake(char Brake_Type)
     R2Drive.set_brake_mode(MOTOR_BRAKE_BRAKE);
     R3Drive.set_brake_mode(MOTOR_BRAKE_BRAKE);
     break;
-    case 'h':
+    case 3:
     L1Drive.set_brake_mode(MOTOR_BRAKE_HOLD);
     L2Drive.set_brake_mode(MOTOR_BRAKE_HOLD);
     L3Drive.set_brake_mode(MOTOR_BRAKE_HOLD);
@@ -116,7 +116,7 @@ void Basic_Control()
 void AutoDrive(double inches, double maxPct) {
   // Reset the drive and make the brake mode "brake"
   int dir = 0;
-  Change_DT_Brake('h');
+  Change_DT_Brake(3);
   ResetDrive();
   if(inches<0)
   {
@@ -125,7 +125,7 @@ void AutoDrive(double inches, double maxPct) {
   inches = abs(inches);
   // Initialize variables
   const int wheelDiam = Wheel_Size; // Diameter of the robot wheels in inches
-  const int target = (inches / (wheelDiam * 3.14)) * 360 * 0.61; // Target distance converted from inches to encoder ticks; double after 360 is a constant tuned for the robot
+  const int target = (inches / (wheelDiam * 3.14)) * 360 * 1.2; // Target distance converted from inches to encoder ticks; double after 360 is a constant tuned for the robot
   int lAvgTicks = 0; // Left average encoder ticks, needed for alignment
   int rAvgTicks = 0; // Right average encoder ticks, needed for alignment
   int avgTicks = 0; // Overall average encoder ticks
@@ -234,7 +234,7 @@ void Auto_Turn(double angle, int maxTurnSp) {
     return;
   }
 
-  while (pros::millis() < escapeTime + 60) { // Exit the loop if the angle is within the margin of error and the speed is below 5 (Speed cutoff prevents overshoot)
+  while (pros::millis() < escapeTime + 500) { // Exit the loop if the angle is within the margin of error and the speed is below 5 (Speed cutoff prevents overshoot)
     targetSpeed = fabs(shortestAngle) * kP + fabs(totAccumAngle) * kI + (fabs(shortestAngle)-fabs(prevShortestAngle)) * kD; // Multiplies the shortest angle by 100 divided by the initial calculated shortest angle so that the drive starts at 100 and will gradually get lower as the target is neared
     
     if (targetSpeed > maxTurnSp)

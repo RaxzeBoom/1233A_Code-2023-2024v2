@@ -14,6 +14,7 @@ void UI_Touch() {
 void initialize() {
 	pros::delay(300); 
 	Start_UI();
+	Intake_Out();
 	pros::screen::touch_callback(UI_Touch, TOUCH_PRESSED);
 	Auto_IMU.reset();
 	rotation_sensor.reset_position();
@@ -52,9 +53,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-
-	//AutoDrive(24,100);
-	Auto_Turn(90,100);
+	Run_Auto();
 }
 
 /**
@@ -72,7 +71,7 @@ void autonomous() {
  */
 void my_task_fn(void* param) {
      while(true){
-      Driver_AutoCatapult();
+      Driver_AutoCatapult(0);
 	  pros::delay(20);
      }
  }
@@ -86,7 +85,6 @@ void opcontrol() {
 		Basic_Control();
 		setCatapultMotors();
 		Driver_Intake();
-		//Driver_AutoCatapult();
 		Wings_Driver_Control();
 		Hang_Driver_Control();
 		Intake_Lift_Driver_Control();

@@ -35,14 +35,14 @@ void setCatapultMotors()
         }
     }
 }
-void AutoCatapult()
+void AutoCatapult(int Change)
 {
     
     Setcataport(Catapult_Auto_Speed);
     pros::delay(Catapult_Wait_Time);
     stopCatapult();
     double prevError = rotation_sensor.get_position() - Catapult_Down_Pos;
-    while(!(rotation_sensor.get_angle() > Catapult_Down_Pos-200 && rotation_sensor.get_angle() < Catapult_Down_Pos+3000 ))
+    while(!(rotation_sensor.get_angle() > Catapult_Down_Pos-(200+Change) && rotation_sensor.get_angle() < Catapult_Down_Pos+3000 ))
     {
         double Error = rotation_sensor.get_position() - Catapult_Down_Pos;
         double accumError = accumError + Error;
@@ -53,10 +53,10 @@ void AutoCatapult()
     }
     stopCatapult();
 }
-void Driver_AutoCatapult()
+void Driver_AutoCatapult(int change)
 {
     if ((controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) || (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) || shoot_cata == true)
     {
-        AutoCatapult();
+        AutoCatapult(change);
     }
 }

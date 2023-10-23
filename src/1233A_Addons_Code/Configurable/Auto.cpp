@@ -58,11 +58,54 @@ void Run_Auto()
 }
 void Auton_1()
 {
+  SetIntake(127);
+  Auto_Turn(35,90);
+  SetIntake(-127);
+  pros::delay(100);
+  AutoDrive(28,110);
+  Auto_Turn(0,70);
+  AutoDrive(8,110);
+  AutoDrive(-4,110);
+  Auto_Turn(270,100);
+  AutoDrive(30,110);
+  Auto_Turn(0,100);
+  SetIntake(127);
+  Intake_In();
+  AutoDrive(29.5,110);
+  AutoDrive(-2,110);
+  Auto_Turn(90,90);
+  Intake_Out();
+  SetIntake(-127);
+  pros::delay(100);
+  AutoDrive(15,110);
+  Auto_Turn(225,90);
+  StopIntake();
+  Intake_In();
+  AutoDrive(48,110);
 
 }
 void Auton_2()
 {
-
+    Intake_In();
+    Wings_Out();
+    AutoDrive(-14,30);
+    Auto_Turn(315,60);
+    Wings_In();
+    SetIntake(127);
+    Auto_Turn(0,60);
+    AutoDrive(15 ,60);
+    Auto_Turn(300,110);
+    AutoDrive(-40,100);
+    Auto_Turn(225,100);
+    Intake_Out();
+    SetIntake(-127);
+    pros::delay(200);
+    AutoDrive(10,60);
+    AutoDrive(-6,100);
+    Auto_Turn(0,100);
+    Intake_In();
+    StopIntake();
+    AutoDrive(35,100);
 }
 void Auton_3()
 {
@@ -80,9 +123,30 @@ void Auton_6()
 {
 
 }
+//Start of blue team autos
+//Blue side half win point, ball out of corner + touching bar
 void Auton_7()
 {
-
+    Intake_In();
+    Wings_Out();
+    AutoDrive(-14,30);
+    Auto_Turn(45,60);
+    Wings_In();
+    SetIntake(127);
+    Auto_Turn(0,60);
+    AutoDrive(15 ,60);
+    Auto_Turn(60,110);
+    AutoDrive(-40,100);
+    Auto_Turn(135,100);
+    Intake_Out();
+    SetIntake(-127);
+    pros::delay(200);
+    AutoDrive(10,60);
+    AutoDrive(-6,100);
+    Auto_Turn(0,100);
+    Intake_In();
+    StopIntake();
+    AutoDrive(35,100);
 }
 void Auton_8()
 {

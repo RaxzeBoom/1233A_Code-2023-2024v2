@@ -125,7 +125,7 @@ void AutoDrive(double inches, double maxPct) {
   inches = abs(inches);
   // Initialize variables
   const int wheelDiam = Wheel_Size; // Diameter of the robot wheels in inches
-  const int target = (inches / (wheelDiam * 3.14)) * 360 * 1.2; // Target distance converted from inches to encoder ticks; double after 360 is a constant tuned for the robot
+  const int target = (inches / (wheelDiam * 3.14)) * 360 * 1.3; // Target distance converted from inches to encoder ticks; double after 360 is a constant tuned for the robot
   int lAvgTicks = 0; // Left average encoder ticks, needed for alignment
   int rAvgTicks = 0; // Right average encoder ticks, needed for alignment
   int avgTicks = 0; // Overall average encoder ticks
@@ -234,11 +234,9 @@ void Auto_Turn(double angle, int maxTurnSp) {
     return;
   }
 
-  while (pros::millis() < escapeTime + 500) { // Exit the loop if the angle is within the margin of error and the speed is below 5 (Speed cutoff prevents overshoot)
+  while (pros::millis() < escapeTime + 60) { // Exit the loop if the angle is within the margin of error and the speed is below 5 (Speed cutoff prevents overshoot)
     targetSpeed = fabs(shortestAngle) * kP + fabs(totAccumAngle) * kI + (fabs(shortestAngle)-fabs(prevShortestAngle)) * kD; // Multiplies the shortest angle by 100 divided by the initial calculated shortest angle so that the drive starts at 100 and will gradually get lower as the target is neared
     
-    if (targetSpeed > maxTurnSp)
-      targetSpeed = maxTurnSp;
 
     // End the loop if the angle and speed show that we are basically there so stalls dont happen
     if (fabs(shortestAngle) < 0.80 && targetSpeed < 1.0) {
@@ -246,7 +244,13 @@ void Auto_Turn(double angle, int maxTurnSp) {
        return;
     }
     
-
+    if (targetSpeed > maxTurnSp)
+    {
+      targetSpeed = maxTurnSp;
+    } else if (targetSpeed < 20)
+    {
+      targetSpeed = 20;
+    }
     if (shortestAngle < 0) { // Negative = counterclockwise (left turn)
       SetLeftDTPower(-targetSpeed);
       SetRightDTPower(targetSpeed);

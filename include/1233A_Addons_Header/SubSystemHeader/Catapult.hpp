@@ -2,5 +2,5 @@
 void Setcataport(int power);
 void stopCatapult();
 void setCatapultMotors();
-void AutoCatapult();
-void Driver_AutoCatapult();
+void AutoCatapult(int Change);
+void Driver_AutoCatapult(int change);

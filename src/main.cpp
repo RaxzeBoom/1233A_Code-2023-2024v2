@@ -53,7 +53,8 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	Run_Auto();
+	Auton_13();
+	//Run_Auto();
 }
 
 /**
@@ -71,7 +72,7 @@ void autonomous() {
  */
 void my_task_fn(void* param) {
      while(true){
-      Driver_AutoCatapult(0);
+      Driver_AutoCatapult();
 	  pros::delay(20);
      }
  }

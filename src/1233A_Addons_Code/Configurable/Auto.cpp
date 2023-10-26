@@ -168,9 +168,52 @@ void Auton_12()
 {
 
 }
+//Start of Other programs
 void Auton_13()
 {
-
+    AutoDrive(1,110);
+    Auto_Turn(35,110);
+    SetIntake(-127);
+    pros::delay(100);
+    AutoDrive(28,110);
+    Auto_Turn(0,70);
+    AutoDrive(7,125);
+    AutoDrive(-4,110);
+    Auto_Turn(45,127);
+    AutoDrive(-12,110);
+    StopIntake();
+    Auto_Turn(110,70);
+    Intake_In();
+    AutoDrive(5,110);
+    AutoDrive(-8,110);
+    pros::delay(2000);
+    MutiShootCata(6);
+    AutoDrive(-4,110);
+    Auto_Turn(35,100);
+    AutoDrive(-12,110);
+    Auto_Turn(90,60);
+    pros::delay(100);
+    AutoDrive(-39,90);
+    Auto_Turn(90,20);
+    AutoDrive(-30,90);
+    Auto_Turn(145,100);
+    AutoDrive(-28,110);
+    AutoDrive(2,110);
+    Auto_Turn(90,50);
+    pros::delay(100);
+    AutoDrive(45,110);
+    Auto_Turn(0,100);
+    AutoDrive(45,110);
+    Auto_Turn(270,100);
+    Wings_Out();
+    AutoDrive(35,110);
+    AutoDrive(-10,110);
+    Auto_Turn(300,100);
+    AutoDrive(20,110);
+    AutoDrive(-5,110);
+    Auto_Turn(270,100);
+    AutoDrive(-15,110);
+    AutoDrive(20,110);
 }
 void Auton_14()
 {

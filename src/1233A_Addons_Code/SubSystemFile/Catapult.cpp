@@ -2,7 +2,6 @@
 extern int Driver_Catapult_Speed;
 extern int Catapult_Down_Pos;
 extern int Catapult_Auto_Speed;
-extern int Catapult_Wait_Time;
 extern double CataPort_PID[3];
 bool shoot_cata = false;
 void Setcataport(int power)
@@ -39,7 +38,10 @@ void AutoCatapult(int Change)
 {
     
     Setcataport(Catapult_Auto_Speed);
-    pros::delay(Catapult_Wait_Time);
+    while(!(rotation_sensor.get_angle() > 0 & rotation_sensor.get_angle() < Catapult_Down_Pos-(200+Change+1000)))
+    {
+        pros::delay(20);
+    }
     stopCatapult();
     double prevError = rotation_sensor.get_position() - Catapult_Down_Pos;
     while(!(rotation_sensor.get_angle() > Catapult_Down_Pos-(200+Change) && rotation_sensor.get_angle() < Catapult_Down_Pos+3000 ))
@@ -53,10 +55,34 @@ void AutoCatapult(int Change)
     }
     stopCatapult();
 }
-void Driver_AutoCatapult(int change)
+void Driver_AutoCatapult()
 {
     if ((controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) || (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) || shoot_cata == true)
     {
-        AutoCatapult(change);
+        AutoCatapult(0);
     }
+    if ((controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)))
+    {
+        AutoCatapult(2000);
+    }
+}
+void MutiShootCata(int Number)
+{
+    int Cata_Counter = 0;
+    int Cata_Switch = 1;
+    while(Cata_Counter <= Number)
+    {
+        Setcataport(127);
+        if(rotation_sensor.get_angle() > 3000 & rotation_sensor.get_angle() < 4000 & Cata_Switch == 1)
+        {
+            Cata_Counter++;
+            Cata_Switch = 0;
+        }
+        if(rotation_sensor.get_angle() > 2000 & rotation_sensor.get_angle() < 3000)
+        {
+            Cata_Switch = 1;
+        }
+        pros::delay(20);
+    }
+    stopCatapult();
 }

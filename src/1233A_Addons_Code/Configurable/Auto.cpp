@@ -127,26 +127,14 @@ void Auton_6()
 //Blue side half win point, ball out of corner + touching bar
 void Auton_7()
 {
-    Intake_In();
     Wings_Out();
     AutoDrive(-14,30);
-    Auto_Turn(45,60);
+    Auto_Turn(45,70);
+    Auto_Turn(0,70);
+    AutoDrive(12,60);
     Wings_In();
-    SetIntake(127);
-    Auto_Turn(0,60);
-    AutoDrive(15 ,60);
-    Auto_Turn(60,110);
-    AutoDrive(-40,100);
-    Auto_Turn(135,100);
-    Intake_Out();
-    SetIntake(-127);
-    pros::delay(200);
-    AutoDrive(10,60);
-    AutoDrive(-6,100);
-    Auto_Turn(0,100);
-    Intake_In();
-    StopIntake();
-    AutoDrive(35,100);
+    Auto_Turn(315,70);
+    AutoDrive(40,80);
 }
 void Auton_8()
 {
@@ -171,7 +159,45 @@ void Auton_12()
 //Start of Other programs
 void Auton_13()
 {
-    AutoDrive(1,110);
+   AutoDrive(7,110);
+   Intake_In();
+   Auto_Turn(20,110);
+   AutoDrive(-3,110);
+   pros::delay(1500);
+   MutiShootCata(6);
+   Auto_Turn(340,110);
+   AutoDrive(-8,110);
+   Auto_Turn(5,60);
+   pros::delay(100);
+   AutoDrive(-70,50);
+   Intake_Out();
+   Auto_Turn(50,60);
+   AutoDrive(-35,70);
+   AutoDrive(2,70);
+   Auto_Turn(0,80);
+   AutoDrive(30,70);
+   Auto_Turn(270,80);
+   AutoDrive(30,70);
+   Auto_Turn(180,80);
+   Wings_Out();
+   for (size_t i = 0; i < 3; i++)
+   {
+       AutoDrive(25,70);
+       AutoDrive(-25,70);
+   }
+
+}
+void Auton_14()
+{
+
+}
+void Auton_15()
+{
+
+}
+void Auton_16()
+{
+ AutoDrive(1,110);
     Auto_Turn(35,110);
     SetIntake(-127);
     pros::delay(100);
@@ -214,16 +240,4 @@ void Auton_13()
     Auto_Turn(270,100);
     AutoDrive(-15,110);
     AutoDrive(20,110);
-}
-void Auton_14()
-{
-
-}
-void Auton_15()
-{
-
-}
-void Auton_16()
-{
-
 }

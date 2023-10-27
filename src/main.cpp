@@ -53,6 +53,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+	//Auton_7();
 	Auton_13();
 	//Run_Auto();
 }
@@ -77,6 +78,7 @@ void my_task_fn(void* param) {
      }
  }
 void opcontrol() {
+	Start_GUI();
 	Change_DT_Brake(1);
 	Catapult.set_brake_mode(MOTOR_BRAKE_COAST);
 	pros::Task  my_task(my_task_fn);

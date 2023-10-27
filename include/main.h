@@ -85,6 +85,7 @@ void opcontrol(void);
 #include "1233A_Addons_Header/SubSystemHeader/pnumatics.hpp"
 #include "1233A_Addons_Header/Configurable/Auto.hpp"
 #include "1233A_Addons_Header/Non-Configurable/Auto_UI.hpp"
+#include "1233A_Addons_Header/Non-Configurable/GUI.hpp"
 //#include <iostream>
 #endif
 

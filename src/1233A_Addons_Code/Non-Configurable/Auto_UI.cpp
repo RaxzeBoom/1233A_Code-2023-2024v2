@@ -90,7 +90,7 @@ void Print_Auto()
     pros::screen::set_pen(COLOR_GREEN);
     pros::screen::print(pros::E_TEXT_SMALL,170,80,"Seleted Auto %i  ",Auto_Num);
 }
-void Touch_Checker(int X, int Y)
+void Touch_Checker(int X, int Y) 
 {
     if(10<Y & Y<60)
     {
@@ -151,7 +151,6 @@ void Start_UI()
 {
    pros::screen::set_pen(COLOR_GRAY );
    pros::screen::fill_rect(0,100,480,240);
-   
    Draw_Buttons();
    Red_Auto_Text();
 }

@@ -44,7 +44,7 @@ void AutoCatapult(int Change)
     }
     stopCatapult();
     double prevError = rotation_sensor.get_position() - Catapult_Down_Pos;
-    while(!(rotation_sensor.get_angle() > Catapult_Down_Pos-(200+Change) && rotation_sensor.get_angle() < Catapult_Down_Pos+3000 ))
+    while(!(rotation_sensor.get_angle() > Catapult_Down_Pos-(200+Change) & rotation_sensor.get_angle() < Catapult_Down_Pos+3000 ))
     {
         double Error = rotation_sensor.get_position() - Catapult_Down_Pos;
         double accumError = accumError + Error;
@@ -69,18 +69,18 @@ void Driver_AutoCatapult()
 void MutiShootCata(int Number)
 {
     int Cata_Counter = 0;
-    int Cata_Switch = 1;
+    bool Cata_Switch = false;
     while(Cata_Counter <= Number)
     {
         Setcataport(127);
-        if(rotation_sensor.get_angle() > 3000 & rotation_sensor.get_angle() < 4000 & Cata_Switch == 1)
+        if(rotation_sensor.get_angle() > 3000 & rotation_sensor.get_angle() < 4000 & Cata_Switch == false)
         {
             Cata_Counter++;
-            Cata_Switch = 0;
+            Cata_Switch = true;
         }
         if(rotation_sensor.get_angle() > 2000 & rotation_sensor.get_angle() < 3000)
         {
-            Cata_Switch = 1;
+            Cata_Switch = false;
         }
         pros::delay(20);
     }

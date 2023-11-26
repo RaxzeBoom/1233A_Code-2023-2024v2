@@ -2,10 +2,10 @@
 bool Toggle_GUI = true;
 void Drive_Train_Heat_Drawer(int Drive_Train_Heat)
 {
-    if(Drive_Train_Heat < 25)
+    if(Drive_Train_Heat < 35)
     {
         pros::screen::set_pen(COLOR_GREEN);
-    } else if(Drive_Train_Heat <50)
+    } else if(Drive_Train_Heat <60)
     {
         pros::screen::set_pen(COLOR_YELLOW);
     } else if (Drive_Train_Heat < 70)
@@ -19,14 +19,14 @@ void Drive_Train_Heat_Drawer(int Drive_Train_Heat)
         pros::screen::set_pen(COLOR_BLACK);
         pros::screen::draw_rect(40,20,140,200);
         pros::screen::set_pen(COLOR_GREEN);
-        pros::screen::print(pros::E_TEXT_SMALL,40,150,"Drive Train %3d", Drive_Train_Heat);
+        pros::screen::print(pros::E_TEXT_SMALL,40,210,"Drive Train %3d", Drive_Train_Heat);
 }
 void Catapult_Heat_Drawer(int Catapult_Heat)
 {
-    if(Catapult_Heat < 25)
+    if(Catapult_Heat < 35)
     {
         pros::screen::set_pen(COLOR_GREEN);
-    } else if(Catapult_Heat <50)
+    } else if(Catapult_Heat <60)
     {
         pros::screen::set_pen(COLOR_YELLOW);
     } else if (Catapult_Heat < 70)
@@ -36,17 +36,18 @@ void Catapult_Heat_Drawer(int Catapult_Heat)
     {
         pros::screen::set_pen(COLOR_RED);
     }
-        pros::screen::fill_rect(180,20,280,200);
+        pros::screen::fill_rect(190,20,290,200);
         pros::screen::set_pen(COLOR_BLACK);
-        pros::screen::draw_rect(180,20,280,200);
-        pros::screen::print(pros::E_TEXT_SMALL,180,150,"Catapult %3d", Catapult_Heat);
+        pros::screen::draw_rect(190,20,290,200);
+        pros::screen::set_pen(COLOR_GREEN);
+        pros::screen::print(pros::E_TEXT_SMALL,190,210,"Catapult %3d", Catapult_Heat);
 }
 void Intake_Heat_Drawer(int Intake_Heat)
 {
-    if(Intake_Heat < 25)
+    if(Intake_Heat < 35)
     {
         pros::screen::set_pen(COLOR_GREEN);
-    } else if(Intake_Heat <50)
+    } else if(Intake_Heat <60)
     {
         pros::screen::set_pen(COLOR_YELLOW);
     } else if (Intake_Heat < 70)
@@ -59,7 +60,8 @@ void Intake_Heat_Drawer(int Intake_Heat)
         pros::screen::fill_rect(340,20,440,200);
         pros::screen::set_pen(COLOR_BLACK);
         pros::screen::draw_rect(340,20,440,200);
-        pros::screen::print(pros::E_TEXT_SMALL,340,150,"Intake %3d", Intake_Heat);
+        pros::screen::set_pen(COLOR_GREEN);
+        pros::screen::print(pros::E_TEXT_SMALL,340,210,"Intake %3d", Intake_Heat);
 }
 void Start_GUI()
 {

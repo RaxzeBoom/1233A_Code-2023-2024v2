@@ -1,5 +1,6 @@
 #include "main.h"
 extern int Auto_Num;
+extern int Change;
 void Run_Auto()
 {
     switch (Auto_Num)
@@ -52,64 +53,61 @@ void Run_Auto()
     case 16:
         Auton_16();
         break;
+    case 17:
+        Auton_17();
+        break;
+    case 18:
+        Auton_18();
+        break;
     default:
         break;
     }
 }
 void Auton_1()
 {
-  SetIntake(127);
-  Auto_Turn(35,90);
-  SetIntake(-127);
-  pros::delay(100);
-  AutoDrive(28,110);
-  Auto_Turn(0,70);
-  AutoDrive(8,110);
-  AutoDrive(-4,110);
-  Auto_Turn(270,100);
-  AutoDrive(30,110);
-  Auto_Turn(0,100);
-  SetIntake(127);
-  Intake_In();
-  AutoDrive(29.5,110);
-  AutoDrive(-2,110);
-  Auto_Turn(90,90);
-  Intake_Out();
-  SetIntake(-127);
-  pros::delay(100);
-  AutoDrive(15,110);
-  Auto_Turn(225,90);
-  StopIntake();
-  Intake_In();
-  AutoDrive(48,110);
+    SetIntake(127);
+    Auto_Turn(35,90);
+    SetIntake(-127);
+    pros::delay(100);
+    AutoDrive(28,110);
+    Auto_Turn(0,70);
+    AutoDrive(7,110);
+    AutoDrive(-3.5,110);
+    Auto_Turn(270,100);
+    AutoDrive(30,110);
+    Auto_Turn(0,100);
+    SetIntake(127);
+    Intake_In();
+    AutoDrive(29.5,110);
+    AutoDrive(-2,110);
+    Auto_Turn(90,90);
+    Intake_Out();
+    Change = 1800;
+    AutoCatapult();
+    SetIntake(-127);
+    pros::delay(100);
+    AutoDrive(15,110);
+    Auto_Turn(225,90);
+    StopIntake();
+     Intake_In();
+    AutoDrive(48,110);
 
 }
 void Auton_2()
 {
-    Intake_In();
     Wings_Out();
     AutoDrive(-14,30);
-    Auto_Turn(315,60);
+    Auto_Turn(45,70);
+    Auto_Turn(0,70);
+    AutoDrive(12,60);
     Wings_In();
-    SetIntake(127);
-    Auto_Turn(0,60);
-    AutoDrive(15 ,60);
-    Auto_Turn(300,110);
-    AutoDrive(-40,100);
-    Auto_Turn(225,100);
-    Intake_Out();
-    SetIntake(-127);
-    pros::delay(200);
-    AutoDrive(10,60);
-    AutoDrive(-6,100);
-    Auto_Turn(0,100);
-    Intake_In();
-    StopIntake();
-    AutoDrive(35,100);
+    Auto_Turn(315,70);
+    AutoDrive(40,80);
 }
 void Auton_3()
 {
-
+    Wings_Out();
+    AutoDrive(48,110);
 }
 void Auton_4()
 {
@@ -127,22 +125,15 @@ void Auton_6()
 //Blue side half win point, ball out of corner + touching bar
 void Auton_7()
 {
-    Wings_Out();
-    AutoDrive(-14,30);
-    Auto_Turn(45,70);
-    Auto_Turn(0,70);
-    AutoDrive(12,60);
-    Wings_In();
-    Auto_Turn(315,70);
-    AutoDrive(40,80);
+    Auton_1();
 }
 void Auton_8()
 {
-    
+    Auton_2();
 }
 void Auton_9()
 {
-
+    Auton_3();
 }
 void Auton_10()
 {
@@ -161,35 +152,38 @@ void Auton_13()
 {
    AutoDrive(7,110);
    Intake_In();
-   Auto_Turn(20,110);
-   AutoDrive(-3,110);
-   pros::delay(1500);
-   MutiShootCata(6);
    Auto_Turn(340,110);
+   AutoDrive(-3,110);
+   pros::delay(500);
+   MutiShootCata(47);
+   Auto_Turn(20,110);
    AutoDrive(-8,110);
-   Auto_Turn(5,60);
+   Auto_Turn(355,60);
    pros::delay(100);
    AutoDrive(-70,50);
    Intake_Out();
-   Auto_Turn(50,60);
+   Auto_Turn(310,60);
    AutoDrive(-35,70);
-   AutoDrive(2,70);
-   Auto_Turn(0,80);
+   Auto_Turn(5,80);
    AutoDrive(30,70);
-   Auto_Turn(270,80);
+   Auto_Turn(90,80);
    AutoDrive(30,70);
    Auto_Turn(180,80);
    Wings_Out();
+    AutoDrive(16,70);
+    AutoDrive(-16,70);
    for (size_t i = 0; i < 3; i++)
    {
-       AutoDrive(25,70);
-       AutoDrive(-25,70);
+       AutoDrive(17,70);
+       AutoDrive(-16,70);
    }
 
 }
+//Backup
 void Auton_14()
 {
-
+    AutoDrive(-40,90);
+    AutoDrive(15,90);
 }
 void Auton_15()
 {
@@ -197,6 +191,7 @@ void Auton_15()
 }
 void Auton_16()
 {
+    /*
  AutoDrive(1,110);
     Auto_Turn(35,110);
     SetIntake(-127);
@@ -240,4 +235,13 @@ void Auton_16()
     Auto_Turn(270,100);
     AutoDrive(-15,110);
     AutoDrive(20,110);
+    */
+}
+void Auton_17()
+{
+
+}
+void Auton_18()
+{
+
 }

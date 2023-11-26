@@ -16,3 +16,5 @@ void Auton_13();
 void Auton_14();
 void Auton_15();
 void Auton_16();
+void Auton_17();
+void Auton_18();

@@ -7,3 +7,4 @@ void ADrive();
 void Basic_Control();
 void AutoDrive(double inches, double maxPct);
 void Auto_Turn(double angle, int maxTurnSp);
+void Macro_Skill();

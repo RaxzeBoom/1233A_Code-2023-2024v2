@@ -1,6 +1,7 @@
 #include "main.h"
-extern int Wheel_Size;
-extern double Striaght_PID [3];
+extern double Wheel_Size;
+extern double Base_Width;
+extern double Striaght_PID [4];
 extern double Turn_PID [4];
 void SetLeftDTPower (int power)
 {
@@ -39,6 +40,19 @@ void ResetDrive()
   R1Drive.tare_position();
   R2Drive.tare_position();
   R3Drive.tare_position();
+}
+void Reset_PID_Drive()
+{
+  // Stop the motors
+  L1Drive.brake();
+  L2Drive.brake();
+  L3Drive.brake();
+  R1Drive.brake();
+  R2Drive.brake();
+  R3Drive.brake();
+  // Reset encoders
+  Ls_SIDE_RS.reset_position();
+  Rs_SIDE_RS.reset_position();
 }
 void TDrive()
 {
@@ -112,6 +126,85 @@ void Basic_Control()
       }
 
     }
+}
+
+void PID_DRIVE(double Target_Dis, double maxspeed)
+{
+  double Combine_Ticks = 0;
+  bool Exit = false;
+  double Ac_Error = 0;
+  double Prev_Error = (Ls_SIDE_RS.get_position() + Rs_SIDE_RS.get_position())/2;
+  const double Target_Ticks = (Target_Dis / (Wheel_Size * 3.14)) * 36000;
+  while(Exit == false)
+  {
+    double L_Side_Ticks = Ls_SIDE_RS.get_position();
+    double R_Side_Ticks = Rs_SIDE_RS.get_position();
+    double B_Side_Ticks = (L_Side_Ticks+R_Side_Ticks)/2;
+    double Error = Target_Ticks - B_Side_Ticks;
+    Ac_Error += Error;
+    int power =  Striaght_PID[0] * Error + Striaght_PID[1] * Ac_Error + Striaght_PID[2]*(Error-Prev_Error);
+    int Diff_power = Striaght_PID[3] * (R_Side_Ticks-L_Side_Ticks);
+    int Ls_speed = power +(Diff_power/2);
+    int Rs_speed = power -(Diff_power/2);
+    if(Ls_speed > maxspeed)
+    {
+      Ls_speed = maxspeed;
+    }
+    if(Rs_speed > maxspeed)
+    {
+      Rs_speed = maxspeed;
+    }
+    if(L_Side_Ticks > R_Side_Ticks)
+    {
+      SetLeftDTPower(Ls_speed);
+      SetRightDTPower(Rs_speed);
+    }
+    if((((B_Side_Ticks <= Target_Ticks + 15)&(B_Side_Ticks >= Target_Ticks - 15)) & ((L_Side_Ticks <= R_Side_Ticks + 20) & (L_Side_Ticks >= R_Side_Ticks - 20)))     )
+    {
+      Exit = true;
+    }
+    Prev_Error = Error;
+  }
+}
+void PID_TURN(double Target_Degree, double maxspeed, double Target_Distance = 0)
+{
+  bool Exit = false;
+  double Ls_Ac_Error = 0;
+  double Rs_Ac_Error = 0;
+  const double Ls_Target_Ticks = ((((Target_Degree/360)*Base_Width)/Wheel_Size)*36000)+((Target_Distance / (Wheel_Size * 3.14)) * 36000);
+  const double Rs_Target_Ticks = (((((Target_Degree/360)*Base_Width)/Wheel_Size)*36000)*-1)+((Target_Distance / (Wheel_Size * 3.14)) * 36000);
+  double Ls_Prev_Error = 0;
+  double Rs_Prev_Error = 0;
+  while(Exit == false)
+  {
+    double L_Side_Ticks = Ls_SIDE_RS.get_position();
+    double R_Side_Ticks = Rs_SIDE_RS.get_position();
+    double Ls_Error = Ls_Target_Ticks - L_Side_Ticks;
+    double Rs_Error = Rs_Target_Ticks - R_Side_Ticks;
+    Ls_Ac_Error += Ls_Error;
+    Rs_Ac_Error += Rs_Error;
+    int Ls_power =  Striaght_PID[0] * Ls_Error + Striaght_PID[1] * Ls_Ac_Error + Striaght_PID[2]*(Ls_Error-Ls_Prev_Error);
+    int Rs_power =  Striaght_PID[0] * Rs_Error + Striaght_PID[1] * Rs_Ac_Error + Striaght_PID[2]*(Rs_Error-Rs_Prev_Error);
+    if(Ls_power > maxspeed)
+    {
+      Ls_power = maxspeed;
+    }
+    if(Rs_power > maxspeed)
+    {
+      Rs_power = maxspeed;
+    }
+    if(L_Side_Ticks > R_Side_Ticks)
+    {
+      SetLeftDTPower(Ls_power);
+      SetRightDTPower(Rs_power);
+    }
+    if(false)
+    {
+      Exit = true;
+    }
+    Ls_Prev_Error = Ls_Error;
+    Rs_Prev_Error = Rs_Error;
+  }
 }
 void AutoDrive(double inches, double maxPct) {
   // Reset the drive and make the brake mode "brake"
@@ -278,4 +371,12 @@ void Auto_Turn(double angle, int maxTurnSp) {
   ResetDrive();
   return;
 
+}
+void Macro_Skill()
+{
+  if((controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)))
+  {
+   pros::delay(500);
+   MutiShootCata(46);
+  }
 }

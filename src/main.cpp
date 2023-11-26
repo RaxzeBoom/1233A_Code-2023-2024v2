@@ -53,9 +53,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	//Auton_7();
-	Auton_13();
-	//Run_Auto();
+	Run_Auto();
 }
 
 /**
@@ -71,20 +69,23 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void my_task_fn(void* param) {
+void Catapult_Shooter(void* param) {
      while(true){
       Driver_AutoCatapult();
 	  pros::delay(20);
      }
  }
+void GUI_Updater(void* param)
+{
+	//Start_GUI();
+}
 void opcontrol() {
-	Start_GUI();
 	Change_DT_Brake(1);
 	Catapult.set_brake_mode(MOTOR_BRAKE_COAST);
-	pros::Task  my_task(my_task_fn);
-	
+	pros::Task  Catapult_Shoot(Catapult_Shooter);
+	pros::Task  GUI_Update(GUI_Updater);
 	while (true) {
-		 
+		Macro_Skill();
 		Basic_Control();
 		setCatapultMotors();
 		Driver_Intake();

@@ -1,6 +1,18 @@
 #include "main.h"
+extern Drivetrain drivetrain;
+Drivetrain::Straight_PID_Var Alfa_Straight(.3,0,0,.15);
+Drivetrain::Turn_PID_Var Alfa_Turn(.6,0,0,false);
+Drivetrain::Turn_PID_Var Beta_Turn(.6, 0 ,0,true);
 extern int Auto_Num;
 extern int Change;
+extern bool shoot_cata;
+extern bool lower_cata;
+void Intake_Out()
+{
+    SetIntake(-127);
+    pros::delay(100);
+    StopIntake();
+}
 void Run_Auto()
 {
     switch (Auto_Num)
@@ -65,47 +77,47 @@ void Run_Auto()
 }
 void Auton_1()
 {
-    SetIntake(127);
-    Auto_Turn(35,90);
-    SetIntake(-127);
+    drivetrain.Auto_Turn(35,90, Beta_Turn);
     pros::delay(100);
-    AutoDrive(28,110);
-    Auto_Turn(0,70);
-    AutoDrive(7,110);
-    AutoDrive(-3.5,110);
-    Auto_Turn(270,100);
-    AutoDrive(30,110);
-    Auto_Turn(0,100);
-    SetIntake(127);
-    Intake_In();
-    AutoDrive(29.5,110);
-    AutoDrive(-2,110);
-    Auto_Turn(90,90);
-    Intake_Out();
+    lower_cata = true;
     Change = 1800;
-    AutoCatapult();
+    drivetrain.AutoDrive(28,110, Alfa_Straight);
+    drivetrain.Auto_Turn(0,70, Alfa_Turn);
+    drivetrain.AutoDrive(7,110, Alfa_Straight);
+    drivetrain.AutoDrive(-3.5,110, Alfa_Straight);
+    Intake_Out();
+    drivetrain.Auto_Turn(270,100, Alfa_Turn);
+    drivetrain.AutoDrive(30,110, Alfa_Straight);
+    drivetrain.Auto_Turn(0,100, Alfa_Turn);
+    SetIntake(127);
+    drivetrain.AutoDrive(33,110, Alfa_Straight);
+    drivetrain.AutoDrive(-2,110, Alfa_Straight);
+    drivetrain.Auto_Turn(90,90, Alfa_Turn);
     SetIntake(-127);
     pros::delay(100);
-    AutoDrive(15,110);
-    Auto_Turn(225,90);
+    drivetrain.AutoDrive(17,110, Alfa_Straight);
+    drivetrain.Auto_Turn(225,90, Alfa_Turn);
     StopIntake();
-     Intake_In();
-    AutoDrive(48,110);
+    Wings_Out();
+    drivetrain.AutoDrive(36,110, Alfa_Straight);
+    drivetrain.Auto_Turn(290,90, Alfa_Turn);
 
 }
 void Auton_2()
 {
     Wings_Out();
-    AutoDrive(-14,30);
+    AutoDrive(-16,30);
     Auto_Turn(45,70);
-    Auto_Turn(0,70);
-    AutoDrive(12,60);
+    Auto_Turn(0,110);
     Wings_In();
+    AutoDrive(20,100);
     Auto_Turn(315,70);
     AutoDrive(40,80);
+    Intake_Out();
 }
 void Auton_3()
 {
+    Intake_Out();
     Wings_Out();
     AutoDrive(48,110);
 }
@@ -122,7 +134,6 @@ void Auton_6()
 
 }
 //Start of blue team autos
-//Blue side half win point, ball out of corner + touching bar
 void Auton_7()
 {
     Auton_1();
@@ -150,34 +161,8 @@ void Auton_12()
 //Start of Other programs
 void Auton_13()
 {
-   AutoDrive(7,110);
-   Intake_In();
-   Auto_Turn(340,110);
-   AutoDrive(-3,110);
-   pros::delay(500);
-   MutiShootCata(47);
-   Auto_Turn(20,110);
-   AutoDrive(-8,110);
-   Auto_Turn(355,60);
-   pros::delay(100);
-   AutoDrive(-70,50);
-   Intake_Out();
-   Auto_Turn(310,60);
-   AutoDrive(-35,70);
-   Auto_Turn(5,80);
-   AutoDrive(30,70);
-   Auto_Turn(90,80);
-   AutoDrive(30,70);
-   Auto_Turn(180,80);
-   Wings_Out();
-    AutoDrive(16,70);
-    AutoDrive(-16,70);
-   for (size_t i = 0; i < 3; i++)
-   {
-       AutoDrive(17,70);
-       AutoDrive(-16,70);
-   }
-
+    Intake_Out();
+    MutiShootCata(60, 80);
 }
 //Backup
 void Auton_14()
@@ -239,7 +224,7 @@ void Auton_16()
 }
 void Auton_17()
 {
-
+    AutoDrive(4,100);
 }
 void Auton_18()
 {

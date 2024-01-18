@@ -1,13 +1,15 @@
 #include "main.h"
 bool Intake_Toggle = false;
 bool Wings_Toggle = false;
+bool Hang_Toggle = false;
+/*
 void Intake_Out() {
     Intake_Lift.set_value(true);
 }
 void Intake_In()
 {
     Intake_Lift.set_value(false);
-}
+}*/
 void Wings_Out()
 {
     Wing.set_value(true);
@@ -20,8 +22,12 @@ void Hang_Out()
 {
     Hang.set_value(true);
 }
+void Hang_In()
+{
+    Hang.set_value(false);
+}
 //Driver Controller Functions
-void Intake_Lift_Driver_Control()
+/*void Intake_Lift_Driver_Control()
 {
     if((controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)))
     {
@@ -40,7 +46,7 @@ void Intake_Lift_Driver_Control()
     {
         pros::delay(10);
     }
-}
+}*/
 void Wings_Driver_Control()
 {
     if((controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)))
@@ -62,7 +68,21 @@ void Wings_Driver_Control()
     }
 }
 void Hang_Driver_Control(){
-    if((controller.get_digital(pros::E_CONTROLLER_DIGITAL_X))){
-        Hang_Out();
+    if((controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)))
+    {
+    if(Hang_Toggle == false)
+        {
+          Hang_Out();
+          Hang_Toggle = true;
+        }
+         else
+        {
+          Hang_In();
+          Hang_Toggle = false;
+        }
+    }
+    while((controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)))
+    {
+        pros::delay(10);
     }
 }

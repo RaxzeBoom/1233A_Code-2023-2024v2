@@ -35,7 +35,6 @@
 #define PROS_USE_LITERALS
 
 #include "api.h"
-
 /**
  * You should add more #includes here
  */
@@ -86,6 +85,7 @@ void opcontrol(void);
 #include "1233A_Addons_Header/Configurable/Auto.hpp"
 #include "1233A_Addons_Header/Non-Configurable/Auto_UI.hpp"
 #include "1233A_Addons_Header/Non-Configurable/GUI.hpp"
+#include "1233A_Addons_Header/Non-Configurable/DriveTrain/Drivetrain_Class.hpp"
 //#include <iostream>
 #endif
 

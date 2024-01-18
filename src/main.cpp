@@ -1,26 +1,26 @@
 #include "main.h"
-
-/**
- * Runs initialization code. This occurs as soon as the program is started.
- *
- * All other competition modes are blocked by initialize; it is recommended
- * to keep execution time for this mode under a few seconds.
- */
+Drivetrain drivetrain({-10,-9,-8} , {6,15,2} , {18} , 2.75, {48,36});
 void UI_Touch() {
 	 pros::screen_touch_status_s_t status = pros::screen::touch_status();
 	 pros::screen::set_pen(COLOR_GREEN);
 	 Touch_Checker(status.x, status.y);
  }
+void Catapult_Shooter(void* param) {
+     while(true){
+      Driver_AutoCatapult();
+	  pros::delay(20);
+     }
+ }
 void initialize() {
 	pros::delay(300); 
 	Start_UI();
-	Intake_Out();
+	drivetrain.Auto_Initialize();
 	pros::screen::touch_callback(UI_Touch, TOUCH_PRESSED);
-	Auto_IMU.reset();
 	rotation_sensor.reset_position();
 	rotation_sensor.reset();
-	rotation_sensor.set_data_rate(5);
-	rotation_sensor.set_position(0);
+	rotation_sensor.set_position(1000);
+	pros::Task  Catapult_Shoot(Catapult_Shooter);
+
 }
 
 /**
@@ -69,29 +69,28 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void Catapult_Shooter(void* param) {
-     while(true){
-      Driver_AutoCatapult();
-	  pros::delay(20);
-     }
- }
+
 void GUI_Updater(void* param)
 {
 	//Start_GUI();
 }
+
 void opcontrol() {
-	Change_DT_Brake(1);
+
 	Catapult.set_brake_mode(MOTOR_BRAKE_COAST);
-	pros::Task  Catapult_Shoot(Catapult_Shooter);
 	pros::Task  GUI_Update(GUI_Updater);
+	drivetrain.Change_Brake_Type('C');
 	while (true) {
+		
+		//controller.print(1,1,"%d   ",drivetrain.leftMotors[0].get_position());
+		controller.print(1,1,"%d   ",drivetrain.Get_Heading());
 		Macro_Skill();
-		Basic_Control();
+		drivetrain.Driver_Control();
 		setCatapultMotors();
 		Driver_Intake();
 		Wings_Driver_Control();
 		Hang_Driver_Control();
-		Intake_Lift_Driver_Control();
-        pros::delay(20);
+		pros::delay(20);
+
 	}
 }

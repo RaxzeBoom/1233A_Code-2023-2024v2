@@ -4,4 +4,4 @@ void stopCatapult();
 void setCatapultMotors();
 void AutoCatapult();
 void Driver_AutoCatapult();
-void MutiShootCata(int Number);
+void MutiShootCata(int Number, double speed);

@@ -6,6 +6,7 @@ extern int Change;
 extern int Catapilt_Middle_Pos;
 extern double CataPort_PID[3];
 bool shoot_cata = false;
+bool lower_cata = false;
 void Setcataport(int power)
 {
     Catapult = power;
@@ -40,16 +41,16 @@ void AutoCatapult()
 {
     
     Setcataport(Catapult_Auto_Speed);
-    while(!(rotation_sensor.get_angle() > 0 & rotation_sensor.get_angle() < Catapult_Down_Pos-(200+Change+1000)))
+    while(!(rotation_sensor.get_position() < Catapult_Down_Pos - 500))
     {
         pros::delay(20);
     }
     stopCatapult();
-    double prevError = Catapult_Down_Pos-(Change) - rotation_sensor.get_angle();
-    while(!((controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) & (rotation_sensor.get_angle() > Catapult_Down_Pos - (700 + Change)))) & !(controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)))
+    double prevError = Catapult_Down_Pos-(Change) - rotation_sensor.get_position();
+    while(!((controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) & (rotation_sensor.get_position() > Catapult_Down_Pos - (700 + Change)))) & !(controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)))
     {
-        if ((controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT))) {Change = 1800;}
-        double Error = Catapult_Down_Pos-(Change) - rotation_sensor.get_angle();
+        if ((controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT))) {Change = Catapilt_Middle_Pos;}
+        double Error = Catapult_Down_Pos-(Change) - rotation_sensor.get_position();
         double accumError = accumError + Error;
         double Power = Error*CataPort_PID[0] + accumError*CataPort_PID[1] + (Error-prevError)*CataPort_PID[2];
         prevError = Error;
@@ -65,19 +66,19 @@ void Driver_AutoCatapult()
         Change = 0;
         AutoCatapult();
     }
-    if ((controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)))
+    if ((controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) || lower_cata == true)
     {
         Change = Catapilt_Middle_Pos;
         AutoCatapult();
     }
 }
-void MutiShootCata(int Number)
+void MutiShootCata(int Number , double speed)
 {
     int Cata_Counter = 0;
     bool Cata_Switch = false;
     while(Cata_Counter <= Number ^ (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)))
     {
-        Setcataport(110);
+        Setcataport(speed);
         if(rotation_sensor.get_angle() > 3000 & rotation_sensor.get_angle() < 4000 & Cata_Switch == false)
         {
             Cata_Counter++;

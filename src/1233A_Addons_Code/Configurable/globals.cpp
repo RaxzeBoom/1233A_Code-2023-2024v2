@@ -8,9 +8,7 @@ pros::Rotation rotation_sensor(Cata_Senser_Port);
 //More motor Configation here
 
 //More senser Configation here
-pros::Imu Auto_IMU(IMU_Port);
-pros::Rotation Ls_SIDE_RS(L_SIDE_RS_PORT);
-pros::Rotation Rs_SIDE_RS(R_SIDE_RS_PORT);
+//pros::Imu Auto_IMU(IMU_Port);
 //More pnumatics Configation here
 pros::ADIDigitalOut Wing (Wings_Port);
 pros::ADIDigitalOut Intake_Lift (Intake_Lift_Port);

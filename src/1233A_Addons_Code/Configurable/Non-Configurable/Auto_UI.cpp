@@ -42,9 +42,9 @@ void Red_Auto_Text()
     pros::screen::set_pen(COLOR_RED);
     pros::screen::fill_rect(0,0,480,100);
     pros::screen::set_pen(COLOR_GREEN);
-    pros::screen::print(pros::E_TEXT_SMALL,12,115,"Far Side   ");
-    pros::screen::print(pros::E_TEXT_SMALL,192,115,"Close Side ");
-    pros::screen::print(pros::E_TEXT_SMALL,372,115,"Distruption");
+    pros::screen::print(pros::E_TEXT_SMALL,12,115,"Far Side    ");
+    pros::screen::print(pros::E_TEXT_SMALL,192,115,"Close Side  ");
+    pros::screen::print(pros::E_TEXT_SMALL,372,115,"Distruption ");
     pros::screen::print(pros::E_TEXT_SMALL,12,185,"Auto 4 ");
     pros::screen::print(pros::E_TEXT_SMALL,192,185,"Auto 5 ");
     pros::screen::print(pros::E_TEXT_SMALL,372,185,"Auto 6 ");
@@ -96,7 +96,7 @@ void Other_Auto_Text()
     pros::screen::print(pros::E_TEXT_SMALL,192,115,"Back-Up     ");
     pros::screen::print(pros::E_TEXT_SMALL,372,115,"Auto 15");
     pros::screen::print(pros::E_TEXT_SMALL,12,185,"Auto 16");
-    pros::screen::print(pros::E_TEXT_SMALL,192,185,"Auto 17");
+    pros::screen::print(pros::E_TEXT_SMALL,192,185,"Simple Score");
     pros::screen::print(pros::E_TEXT_SMALL,372,185,"Nothing    " );
     //Redo the top three Rectangles
     pros::screen::set_pen(COLOR_RED);
@@ -195,8 +195,9 @@ void Auton_Checker(int num)
         DIS_Printer(0,"DEFULT");
         break;
     case 17:
-        NAME_Printer("DEFULT 17");
-        DIS_Printer(0,"DEFULT");
+        NAME_Printer("Simple Score");
+        DIS_Printer(0,"Moves forward to prevent triball form touching  ");
+        DIS_Printer(1,"bot");
         break;
     case 18:
         NAME_Printer("Nothing");

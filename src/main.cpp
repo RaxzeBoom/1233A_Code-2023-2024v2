@@ -14,7 +14,7 @@ void Catapult_Shooter(void* param) {
 void initialize() {
 	pros::delay(300); 
 	Start_UI();
-	drivetrain.Auto_Initialize();
+	drivetrain.Initialize();
 	pros::screen::touch_callback(UI_Touch, TOUCH_PRESSED);
 	rotation_sensor.reset_position();
 	rotation_sensor.reset();
@@ -83,7 +83,7 @@ void opcontrol() {
 	while (true) {
 		
 		//controller.print(1,1,"%d   ",drivetrain.leftMotors[0].get_position());
-		controller.print(1,1,"%d   ",drivetrain.Get_Heading());
+
 		Macro_Skill();
 		drivetrain.Driver_Control();
 		setCatapultMotors();

@@ -396,7 +396,7 @@ void AutoDrive(double inches, double maxPct) {
   const double kD = Turn_PID[2];//4.00;
   
   const double kdecel = Turn_PID[3];
-  
+  int Counter = 0;
   double targetSpeed = 0.0;
   double currentSpeed = 0.0;
   double speed = 0.0;
@@ -413,8 +413,12 @@ void AutoDrive(double inches, double maxPct) {
     // End the loop if the angle and speed show that we are basically there so stalls dont happen
     if (fabs(shortestAngle) < 0.80 && targetSpeed < 1.0) {
        ResetDrive();
+       Counter++;
+       if(Counter == 100)
+       {
        return;
-    }
+       }
+    } else {Counter = 0;}
     
     if (targetSpeed > maxTurnSp)
     {

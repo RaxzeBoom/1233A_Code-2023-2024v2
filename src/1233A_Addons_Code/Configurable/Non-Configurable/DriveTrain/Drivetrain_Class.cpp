@@ -58,7 +58,25 @@
         Set_Drive_Motors(leftMotors , Left_Side_Speed);
         Set_Drive_Motors(rightMotors , Right_Side_Speed);
     }
-    double Drivetrain::Degrees_Traveled(char side)
+    void Drivetrain::Initialize(){
+        for (pros::Imu IMU : IMU_List){
+            IMU.reset();
+        }
+    }
+    void Drivetrain::Reset_Motor_Position()
+    {
+        for (pros::Motor Motor : leftMotors)
+        {
+            Motor.brake();
+            Motor.tare_position();
+        }
+        for (pros::Motor Motor : rightMotors)
+        {
+            Motor.brake();
+            Motor.tare_position();
+        }
+    }
+    double Drivetrain::Get_Position(char side)
     {
         double Total_Ticks = 0;
         if(side == 'l' ^ 'L')
@@ -80,7 +98,7 @@
        
         return 0;
     }   
-    double Drivetrain::Drive_RPM(char side)
+    double Drivetrain::Get_RPM(char side)
     {
         double Total_RPM;
         if(side == 'l' ^ 'L')
@@ -100,30 +118,12 @@
         } 
         return 0;
     }
-    void Drivetrain::Auto_Initialize(){
-        for (pros::Imu IMU : IMU_List){
-            IMU.reset();
-        }
-    }
     double Drivetrain::Get_Heading(){
         double total = 0;
         for(pros::Imu IMU : IMU_List){
             total = total + IMU.get_heading();
         }
         return total/IMU_List.size();
-    }
-    void Drivetrain::Reset_Motor_POS()
-    {
-        for (pros::Motor Motor : leftMotors)
-        {
-            Motor.brake();
-            Motor.tare_position();
-        }
-        for (pros::Motor Motor : rightMotors)
-        {
-            Motor.brake();
-            Motor.tare_position();
-        }
     }
    //Changes the Brake Type for the drivetrain {B for Brake C for Coast H for Hold}
     void Drivetrain::Change_Brake_Type(char Type)
@@ -158,6 +158,14 @@
             break;
         }
     }
+    Drivetrain::RPM_PID_Var::RPM_PID_Var() {}
+    Drivetrain::RPM_PID_Var::RPM_PID_Var(double kP_, double kI_, double kD_, double kF_)
+    {
+        kP = kP_;
+        kI = kI_;
+        kD = kD_;
+        kF = kF_;
+    };
     Drivetrain::Straight_PID_Var::Straight_PID_Var() {}
     Drivetrain::Straight_PID_Var::Straight_PID_Var(double kP_, double kI_, double kD_, double kA_)
     {
@@ -174,11 +182,15 @@
         kD = kD_;
         Passive_Power = Passive_Power_;
     };
+    void Drivetrain::RPM_Controller(RPM_PID_Var variable)
+    {
+
+    }
     void Drivetrain::AutoDrive(double inches, double maxPct, Straight_PID_Var variable) {
         // Reset the drive and make the brake mode "brake"
         int dir = 0;
         Change_Brake_Type('H');
-        Reset_Motor_POS();
+        Reset_Motor_Position();
         if(inches<0)
         {
             dir = 1;
@@ -246,8 +258,8 @@
             Set_Drivetrain(lPower,rPower);
 
             // Update the average ticks for the next iteration
-            rAvgTicks = fabs(Degrees_Traveled('r'));
-            lAvgTicks = fabs(Degrees_Traveled('l'));
+            rAvgTicks = fabs(Get_Position('r'));
+            lAvgTicks = fabs(Get_Position('l'));
             avgTicks = (rAvgTicks + lAvgTicks)/2;
 
             // Update the PID variables
@@ -258,11 +270,11 @@
             // Wait to save brain resources
             pros::delay(10);
         }
-        Reset_Motor_POS(); // Reset the drive encoders and stop all of the motors after driving is completed
+        Reset_Motor_Position(); // Reset the drive encoders and stop all of the motors after driving is completed
         }
     void Drivetrain::Auto_Turn(double angle, int maxTurnSp, Turn_PID_Var variable) {
-        Reset_Motor_POS();
-        Change_Brake_Type('H');
+        Reset_Motor_Position();
+        Change_Brake_Type('B');
         // Determine which way to turn
         double currHeading = Get_Heading(); // Current heading - updated every iteration
         
@@ -281,30 +293,33 @@
         const double kI = variable.kI;//0.0017;
         const double kD = variable.kD;//4.00;
         
-        
+        int Counter = 0;
         double targetSpeed = 0.0;
         double currentSpeed = 0.0;
         double speed = 0.0;
-
         uint32_t escapeTime = pros::millis();
-        if (fabs(shortestAngle) < 1.0 && targetSpeed < 2.0) { // Don't do anything if pretty much already there
-            return;
+        if (fabs(shortestAngle) < 1.0) { // Don't do anything if pretty much already there
+            //return;
         }
 
         while (true) { // Exit the loop if the angle is within the margin of error and the speed is below 5 (Speed cutoff prevents overshoot)
             targetSpeed = fabs(shortestAngle) * kP + fabs(totAccumAngle) * kI + (fabs(shortestAngle)-fabs(prevShortestAngle)) * kD; // Multiplies the shortest angle by 100 divided by the initial calculated shortest angle so that the drive starts at 100 and will gradually get lower as the target is neared
-            
+            currentSpeed = (Get_RPM('l') + Get_RPM('r'))/2;
 
             // End the loop if the angle and speed show that we are basically there so stalls dont happen
-            if (fabs(shortestAngle) < 0.80 && targetSpeed < 1.0) {
-            Reset_Motor_POS();
-            return;
-            }
+            if (fabs(shortestAngle) < 0.80 && currentSpeed < 1.0) {
+            Counter++;
+            if(Counter >=3)
+                {
+                return;
+                Reset_Motor_Position();
+                }
+            } else{Counter = 0;}
             if(variable.Passive_Power == true){
                 if(targetSpeed > 0){
-                    targetSpeed = fmax(targetSpeed, 25);
+                    targetSpeed = fmax(targetSpeed, 16);
                 } else{
-                    targetSpeed = fmin(targetSpeed, -25);
+                    targetSpeed = fmin(targetSpeed, -16);
                 }
             }
             if (shortestAngle < 0) { // Negative = counterclockwise (left turn)
@@ -314,7 +329,7 @@
             } else { // Default to not turn if there is an error
 
             }
-            controller.print(1,1,"%d   ",Get_Heading());
+            controller.print(1,1,"%f \n", Get_Heading());
             currHeading = Get_Heading(); // Current heading - updated every iteration
 
             prevShortestAngle = shortestAngle;
@@ -329,8 +344,8 @@
 
             pros::delay(10); // Save resources
         }
-        Reset_Motor_POS();
-        return;
+        Reset_Motor_Position();
+        //return;
 
 }
 

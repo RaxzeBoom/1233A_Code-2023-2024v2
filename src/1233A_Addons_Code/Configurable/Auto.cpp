@@ -1,8 +1,8 @@
 #include "main.h"
 extern Drivetrain drivetrain;
 Drivetrain::Straight_PID_Var Alfa_Straight(.3,0,0,.15);
-Drivetrain::Turn_PID_Var Alfa_Turn(.6,0,0,false);
-Drivetrain::Turn_PID_Var Beta_Turn(.6, 0 ,0,true);
+Drivetrain::Turn_PID_Var Alfa_Turn(.6,0,0,true);
+Drivetrain::Turn_PID_Var Beta_Turn(1, 0 ,0,true);
 extern int Auto_Num;
 extern int Change;
 extern bool shoot_cata;
@@ -77,21 +77,21 @@ void Run_Auto()
 }
 void Auton_1()
 {
-    drivetrain.Auto_Turn(35,90, Beta_Turn);
+    drivetrain.Auto_Turn(48,90, Beta_Turn);
     pros::delay(100);
     lower_cata = true;
     Change = 1800;
     drivetrain.AutoDrive(28,110, Alfa_Straight);
     drivetrain.Auto_Turn(0,70, Alfa_Turn);
-    drivetrain.AutoDrive(7,110, Alfa_Straight);
-    drivetrain.AutoDrive(-3.5,110, Alfa_Straight);
+    drivetrain.AutoDrive(8,110, Alfa_Straight);
+    drivetrain.AutoDrive(-3,110, Alfa_Straight);
     Intake_Out();
     drivetrain.Auto_Turn(270,100, Alfa_Turn);
     drivetrain.AutoDrive(30,110, Alfa_Straight);
     drivetrain.Auto_Turn(0,100, Alfa_Turn);
     SetIntake(127);
-    drivetrain.AutoDrive(33,110, Alfa_Straight);
-    drivetrain.AutoDrive(-2,110, Alfa_Straight);
+    drivetrain.AutoDrive(38,110, Alfa_Straight);
+    drivetrain.AutoDrive(-4,110, Alfa_Straight);
     drivetrain.Auto_Turn(90,90, Alfa_Turn);
     SetIntake(-127);
     pros::delay(100);
@@ -99,20 +99,21 @@ void Auton_1()
     drivetrain.Auto_Turn(225,90, Alfa_Turn);
     StopIntake();
     Wings_Out();
-    drivetrain.AutoDrive(36,110, Alfa_Straight);
-    drivetrain.Auto_Turn(290,90, Alfa_Turn);
+    drivetrain.AutoDrive(42,110, Alfa_Straight);
+    drivetrain.Auto_Turn(280,90, Alfa_Turn);
+    drivetrain.AutoDrive(6,110, Alfa_Straight);
 
 }
 void Auton_2()
 {
     Wings_Out();
-    AutoDrive(-16,30);
-    Auto_Turn(45,70);
-    Auto_Turn(0,110);
+    drivetrain.AutoDrive(-16,30,Alfa_Straight);
+    drivetrain.Auto_Turn(45,70,Alfa_Turn);
+    drivetrain.Auto_Turn(0,110,Alfa_Turn);
     Wings_In();
-    AutoDrive(20,100);
-    Auto_Turn(315,70);
-    AutoDrive(40,80);
+    drivetrain.AutoDrive(20,100,Alfa_Straight);
+    drivetrain.Auto_Turn(315,70,Alfa_Turn);
+    drivetrain.AutoDrive(40,80,Alfa_Straight);
     Intake_Out();
 }
 void Auton_3()
@@ -167,8 +168,8 @@ void Auton_13()
 //Backup
 void Auton_14()
 {
-    AutoDrive(-40,90);
-    AutoDrive(15,90);
+    drivetrain.AutoDrive(-40,90,Alfa_Straight);
+    drivetrain.AutoDrive(15,90,Alfa_Straight);
 }
 void Auton_15()
 {
@@ -224,7 +225,7 @@ void Auton_16()
 }
 void Auton_17()
 {
-    AutoDrive(4,100);
+    drivetrain.AutoDrive(4,100, Alfa_Straight);
 }
 void Auton_18()
 {

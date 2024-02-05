@@ -112,7 +112,7 @@
         {
             for (pros::Motor Motor_Check : rightMotors)
             {
-                Total_RPM+= Motor_Check.get_position();
+                Total_RPM+= Motor_Check.get_actual_velocity();
             }
             return Total_RPM/rightMotors.size();
         } 
@@ -124,6 +124,11 @@
             total = total + IMU.get_heading();
         }
         return total/IMU_List.size();
+    }
+    double Drivetrain::Set_Heading(double heading_){
+        for(pros::Imu IMU : IMU_List){
+            IMU.set_heading(heading_);
+        }
     }
    //Changes the Brake Type for the drivetrain {B for Brake C for Coast H for Hold}
     void Drivetrain::Change_Brake_Type(char Type)
@@ -182,11 +187,43 @@
         kD = kD_;
         Passive_Power = Passive_Power_;
     };
+    Drivetrain::RPM_Controller_Target::RPM_Controller_Target() {}
+    Drivetrain::RPM_Controller_Target::RPM_Controller_Target(double Left_Speed_ , double Right_Speed_)
+    {
+        Left_Speed = Left_Speed_;
+        Right_Speed = Right_Speed_;
+    }
+    //A Controller to make the robot drivetrain move at a RPM
     void Drivetrain::RPM_Controller(RPM_PID_Var variable)
     {
-
+        //Defines Left and Right side variables for the PID loop to work.
+        double LsError , RsError;
+        double LsAccError , RsAccError;
+        double LsPrevError , RsPrevError;
+        double LsPower , RsPower;
+        while (true)
+        {
+            //Calculates the error of rpm for left and right side parts of the drivetrain
+            LsError =  Speed_Target.Left_Speed - Get_RPM('l');
+            RsError =  Speed_Target.Right_Speed - Get_RPM('r');
+            //Add the error to the total error
+            LsAccError += LsError, RsAccError += RsError;
+            //Figures out the volts the motor needs to run at
+            LsPower = LsError * variable.kP + LsAccError * variable.kI  
+            + (LsError - LsPrevError) * variable.kD + Speed_Target.Left_Speed * variable.kF;
+            RsPower = RsError * variable.kP + RsAccError * variable.kI  
+            + (RsError - RsPrevError) * variable.kD + Speed_Target.Left_Speed * variable.kF;
+            controller.print(1,1,"%1f %1f \n", Get_RPM('l') , Get_RPM('r'));
+            if(RPM_PID_State == true)
+            {
+                Set_Drivetrain(LsPower, RsPower);
+            }
+            LsPrevError = LsError;
+            RsPrevError = RsError;
+        }
+        
     }
-    void Drivetrain::AutoDrive(double inches, double maxPct, Straight_PID_Var variable) {
+    void Drivetrain::Straight(double inches, double maxPct, Straight_PID_Var variable) {
         // Reset the drive and make the brake mode "brake"
         int dir = 0;
         Change_Brake_Type('H');
@@ -265,6 +302,14 @@
             // Update the PID variables
             prevError = error; // Set the previous error to the current error before it is updated
             accumulativeError += prevError; // Add the previous error to the accumuilative error; can't add the current error because that is current, not what it has already driven
+            if(fabs(error) < .5)
+            {
+                accumulativeError = 0;
+            }
+            if(fabs(error) > 15)
+            {
+                accumulativeError = 0;
+            }
             error = target - avgTicks; // Update current error
             
             // Wait to save brain resources
@@ -272,54 +317,36 @@
         }
         Reset_Motor_Position(); // Reset the drive encoders and stop all of the motors after driving is completed
         }
-    void Drivetrain::Auto_Turn(double angle, int maxTurnSp, Turn_PID_Var variable) {
+    void Drivetrain::Turn(double angle, int maxTurnSp, Turn_PID_Var variable) {
         Reset_Motor_Position();
         Change_Brake_Type('B');
         // Determine which way to turn
-        double currHeading = Get_Heading(); // Current heading - updated every iteration
-        
-        double shortestAngle = fmod((angle-currHeading+540.0), 360.0)-180.0;
+        double shortestAngle = fmod((angle-Get_Heading()+540.0), 360.0)-180.0;
         double prevShortestAngle = shortestAngle;
         double totAccumAngle = 0.0;
-
         // PID Variables
-        double kP = variable.kP;
-
-        kP *= 1 + (((180-abs(shortestAngle))/15)*0.22); // 1 + How far we start from the target/15 * .25 to get multiplier to prevent stall
-
-        //if (fabs(shortestAngle)<90) kP *= 1.3;
-        //else if (fabs(shortestAngle)<45) kP *= 1.7;
-
-        const double kI = variable.kI;//0.0017;
-        const double kD = variable.kD;//4.00;
-        
+        const double kP = variable.kP;
+        const double kI = variable.kI;
+        const double kD = variable.kD;
         int Counter = 0;
         double targetSpeed = 0.0;
         double currentSpeed = 0.0;
         double speed = 0.0;
-        uint32_t escapeTime = pros::millis();
-        if (fabs(shortestAngle) < 1.0) { // Don't do anything if pretty much already there
-            //return;
-        }
-
         while (true) { // Exit the loop if the angle is within the margin of error and the speed is below 5 (Speed cutoff prevents overshoot)
             targetSpeed = fabs(shortestAngle) * kP + fabs(totAccumAngle) * kI + (fabs(shortestAngle)-fabs(prevShortestAngle)) * kD; // Multiplies the shortest angle by 100 divided by the initial calculated shortest angle so that the drive starts at 100 and will gradually get lower as the target is neared
             currentSpeed = (Get_RPM('l') + Get_RPM('r'))/2;
 
             // End the loop if the angle and speed show that we are basically there so stalls dont happen
-            if (fabs(shortestAngle) < 0.80 && currentSpeed < 1.0) {
+            if (fabs(shortestAngle) < 0.80 && currentSpeed < .8) {
             Counter++;
-            if(Counter >=3)
-                {
-                return;
-                Reset_Motor_Position();
-                }
-            } else{Counter = 0;}
+            Reset_Motor_Position();
+            return;
+            }
             if(variable.Passive_Power == true){
                 if(targetSpeed > 0){
-                    targetSpeed = fmax(targetSpeed, 16);
+                    targetSpeed = fmax(targetSpeed, 17);
                 } else{
-                    targetSpeed = fmin(targetSpeed, -16);
+                    targetSpeed = fmin(targetSpeed, -17);
                 }
             }
             if (shortestAngle < 0) { // Negative = counterclockwise (left turn)
@@ -330,25 +357,26 @@
 
             }
             controller.print(1,1,"%f \n", Get_Heading());
-            currHeading = Get_Heading(); // Current heading - updated every iteration
+            Get_Heading(); // Current heading - updated every iteration
 
             prevShortestAngle = shortestAngle;
-            shortestAngle = fmod((angle-currHeading+540.0), 360.0)-180.0;
+            shortestAngle = fmod((angle-Get_Heading()+540.0), 360.0)-180.0;
 
             if (fabs(shortestAngle)-fabs(prevShortestAngle) > 15) // make sure that the angle doesnt change by more than 30 each iteration (to prevent accidental turn around)
             shortestAngle = prevShortestAngle;
 
-            totAccumAngle += fabs(prevShortestAngle-shortestAngle);
-            
-            if (abs(shortestAngle) > 0.65) escapeTime = pros::millis();
-
+            totAccumAngle += fabs(shortestAngle);
+            if(fabs(shortestAngle) < .5)
+            {
+                totAccumAngle = 0;
+            }
+            if(fabs(shortestAngle) > 15)
+            {
+                totAccumAngle = 0;
+            }
             pros::delay(10); // Save resources
         }
         Reset_Motor_Position();
         //return;
 
 }
-
-
-
-

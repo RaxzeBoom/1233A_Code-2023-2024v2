@@ -5,14 +5,14 @@ int Auto_Num = 1;
 int Discription_NUM = 1;
 int Name_NUM = 1;
 int Touch_Checker_NUM = 0;
-void Draw_Buttons()
+void Top_Buttons()
 {
-    pros::screen::set_pen(COLOR_RED);
     //Makes 3 top rectangles that are 50 by 60 pixels
+    pros::screen::set_pen(COLOR_GREEN);
     pros::screen::fill_rect(10,10,70,60);
     pros::screen::set_pen(COLOR_BLACK);
     pros::screen::draw_rect(10,10,70,60);
-    pros::screen::set_pen(COLOR_BLUE);
+    pros::screen::set_pen(COLOR_RED);
     pros::screen::fill_rect(215,10,275,60);
     pros::screen::set_pen(COLOR_BLACK);
     pros::screen::draw_rect(215,10,275,60);
@@ -20,6 +20,10 @@ void Draw_Buttons()
     pros::screen::fill_rect(410,10,470,60);
     pros::screen::set_pen(COLOR_BLACK);
     pros::screen::draw_rect(410,10,470,60);
+}
+void Draw_Buttons()
+{
+    Top_Buttons();
     //makes 3 rectangles that are below the top three that are 50 by 100 pixels
     pros::screen::fill_rect(10,110,110,160);
     pros::screen::fill_rect(190,110,290,160);
@@ -36,10 +40,10 @@ void Draw_Buttons()
     pros::screen::draw_rect(190,180,290,230);
     pros::screen::draw_rect(370,180,470,230);
 }
-void Red_Auto_Text()
+void Close_Auto_Text()
 {
     //Turns the Top Red and put in in auto names
-    pros::screen::set_pen(COLOR_RED);
+    pros::screen::set_pen(COLOR_GREEN);
     pros::screen::fill_rect(0,0,480,100);
     pros::screen::set_pen(COLOR_GREEN);
     pros::screen::print(pros::E_TEXT_SMALL,12,115,"Far Side    ");
@@ -49,22 +53,13 @@ void Red_Auto_Text()
     pros::screen::print(pros::E_TEXT_SMALL,192,185,"Auto 5 ");
     pros::screen::print(pros::E_TEXT_SMALL,372,185,"Auto 6 ");
     //Redo the top three Rectangles
-    pros::screen::set_pen(COLOR_RED);
-    pros::screen::fill_rect(10,10,70,60);
-    pros::screen::set_pen(COLOR_BLUE);
-    pros::screen::fill_rect(215,10,275,60);
-    pros::screen::set_pen(COLOR_GRAY);
-    pros::screen::fill_rect(410,10,470,60);
-    pros::screen::set_pen(COLOR_BLACK);
-    pros::screen::draw_rect(10,10,70,60);
-    pros::screen::draw_rect(215,10,275,60);
-    pros::screen::draw_rect(410,10,470,60);
+    Top_Buttons();
     Color_Num = 1;
 }
-void Blue_Auto_Text()
+void Far_Auto_Text()
 {
      //Turns the Top Blue and put in in auto names
-    pros::screen::set_pen(COLOR_BLUE);
+    pros::screen::set_pen(COLOR_RED);
     pros::screen::fill_rect(0,0,480,100);
     pros::screen::set_pen(COLOR_GREEN);
     pros::screen::print(pros::E_TEXT_SMALL,12,115,"Far Side    ");
@@ -74,16 +69,7 @@ void Blue_Auto_Text()
     pros::screen::print(pros::E_TEXT_SMALL,192,185,"Auto 11");
     pros::screen::print(pros::E_TEXT_SMALL,372,185,"Auto 12");
     //Redo the top three Rectangles
-    pros::screen::set_pen(COLOR_RED);
-    pros::screen::fill_rect(10,10,70,60);
-    pros::screen::set_pen(COLOR_BLUE);
-    pros::screen::fill_rect(215,10,275,60);
-    pros::screen::set_pen(COLOR_GRAY);
-    pros::screen::fill_rect(410,10,470,60);
-    pros::screen::set_pen(COLOR_BLACK);
-    pros::screen::draw_rect(10,10,70,60);
-    pros::screen::draw_rect(215,10,275,60);
-    pros::screen::draw_rect(410,10,470,60);
+    Top_Buttons();
     Color_Num = 2;
 }
 void Other_Auto_Text()
@@ -99,21 +85,18 @@ void Other_Auto_Text()
     pros::screen::print(pros::E_TEXT_SMALL,192,185,"Simple Score");
     pros::screen::print(pros::E_TEXT_SMALL,372,185,"Nothing    " );
     //Redo the top three Rectangles
-    pros::screen::set_pen(COLOR_RED);
-    pros::screen::fill_rect(10,10,70,60);
-    pros::screen::set_pen(COLOR_BLUE);
-    pros::screen::fill_rect(215,10,275,60);
-    pros::screen::set_pen(COLOR_GRAY);
-    pros::screen::fill_rect(410,10,470,60);
-    pros::screen::set_pen(COLOR_BLACK);
-    pros::screen::draw_rect(10,10,70,60);
-    pros::screen::draw_rect(215,10,275,60);
-    pros::screen::draw_rect(410,10,470,60);
+    Top_Buttons();
     Color_Num = 3;
 }
-void DIS_Printer(int line,std::string Discription)
+void DIS_Printer(int line,std::vector<std::string> Discription)
 {
-    pros::screen::print(pros::E_TEXT_SMALL,line+3,"%S",Discription);
+    int Next_Line = 0;
+    for (std::string Text : Discription)
+    {
+        pros::screen::print(pros::E_TEXT_SMALL,Next_Line + line+3,"%S",Text);
+        Next_Line++;
+    }
+    
 }
 void NAME_Printer(std::string NAME)
 {
@@ -124,84 +107,100 @@ void Auton_Checker(int num)
     switch (Auto_Num)
     {
     case 1:
-        NAME_Printer("Far Side Red Auto");
-        DIS_Printer(0,"Pushes in red ball, then moves and score ball");
-        DIS_Printer(1,"by goal and then touches bar.");
+        NAME_Printer("Close Side Winpoint");
+        DIS_Printer(0,
+        {"Back up and moves the inside ball from the match",
+         "loading zone then moves forward and touches bar"});
         break;
     case 2:
-        NAME_Printer("Close Side Red Auto");
-        DIS_Printer(0,"Back up and moves the inside ball from the match");
-        DIS_Printer(1,"loading zone then moves forward and touches bar");
+        NAME_Printer("Close Side Distruption");
+        DIS_Printer(0,
+        {"Wings Out Moves torwards middle and stops"});
         break;
     case 3:
-        NAME_Printer("Close Side Red Distruption");
-        DIS_Printer(0,"Wings Out Moves torwards middle and stops");
+        NAME_Printer("DEFULT 3");
+        DIS_Printer(0,
+        {"DEFULT"});
         break;
     case 4:
         NAME_Printer("DEFULT 4");
-        DIS_Printer(0,"DEFULT");
+        DIS_Printer(0,
+        {"DEFULT"});
         break;
     case 5:
         NAME_Printer("DEFULT 5");
-        DIS_Printer(0,"DEFULT");
+        DIS_Printer(0,
+        {"DEFULT"});
         break;
     case 6:
         NAME_Printer("DEFULT 6");
-        DIS_Printer(0,"DEFULT");
+        DIS_Printer(0,
+        {"DEFULT"});
         break;
     //BLUE AUTOS
     case 7:
-        NAME_Printer("Far Side Blue Auto");
-        DIS_Printer(0,"Pushes in Blue ball, then moves and score ball");
-        DIS_Printer(1,"by goal and then touches bar.");
+        NAME_Printer("Far Side Winpoint");
+        DIS_Printer(0,
+        {"Pushes in red ball, then moves and score ball",
+         "by goal and then touches bar."});
         break;
     case 8:
-        NAME_Printer("Close Side Blue Auto");
-        DIS_Printer(0,"Back up and moves the inside ball from the match");
-        DIS_Printer(1,"loading zone then moves forward and touches bar");
+        NAME_Printer("DEFULT 8");
+        DIS_Printer(0,
+        {"DEFULT"});
         break;
     case 9:
-        NAME_Printer("Close Side Blue Distruption");
-        DIS_Printer(0,"Wings Out Moves torwards middle and stops");
+        NAME_Printer("DEFULT 9");
+        DIS_Printer(0,
+        {"DEFULT"});
         break;
     case 10:
         NAME_Printer("DEFULT 10");
-        DIS_Printer(0,"DEFULT");
+        DIS_Printer(0,
+        {"DEFULT"});
         break;
     case 11:
         NAME_Printer("DEFULT 11");
-        DIS_Printer(0,"DEFULT");
+        DIS_Printer(0,
+        {"DEFULT"});
         break;
     case 12:
         NAME_Printer("DEFULT 12");
-        DIS_Printer(0,"DEFULT");
+        DIS_Printer(0,
+        {"DEFULT"});
         break;
     //OTHER AUTOS
     case 13:
         NAME_Printer("Skills Auto");
-        DIS_Printer(0,"Shoots 46 times then goes to other side to score");
-        DIS_Printer(1,"triball");
+        DIS_Printer(0,
+        {"Shoots 46 times then goes to other side to score",
+         "triball"});
         break;
     case 14:
         NAME_Printer("Backup");
-        DIS_Printer(0,"Backs up and them moves forwards");
+        DIS_Printer(0,
+        {"Backs up and them moves forwards"});
         break;
     case 15:
         NAME_Printer("DEFULT 15");
-        DIS_Printer(0,"DEFULT");
+        DIS_Printer(0,
+        {"DEFULT"});
         break;
     case 16:
         NAME_Printer("DEFULT 16");
-        DIS_Printer(0,"DEFULT");
+        DIS_Printer(0,
+        {"DEFULT"});
         break;
     case 17:
         NAME_Printer("Simple Score");
-        DIS_Printer(0,"Moves forward to prevent triball form touching  ");
-        DIS_Printer(1,"bot");
+        DIS_Printer(0,
+        {"Moves forward to prevent triball form touching  ",
+         "bot"});
         break;
     case 18:
         NAME_Printer("Nothing");
-        DIS_Printer(0,"Does Nothing");
+        DIS_Printer(0,
+        {"Does Nothing"});
         break;
     default:
         break;
@@ -237,11 +236,11 @@ if(Touch_Checker_NUM == 0)
     {
         if (10<X & X<110)
         {
-            Red_Auto_Text();
+            Close_Auto_Text();
         }
         else if (190<X & X<290)
         {
-            Blue_Auto_Text();
+            Far_Auto_Text();
         }
         else if (370<X & X<470)
         {
@@ -298,10 +297,10 @@ if(Touch_Checker_NUM == 0)
             switch (Color_Num)
             {
             case 1:
-            Red_Auto_Text();
+            Close_Auto_Text();
             break;
             case 2:
-            Blue_Auto_Text();
+            Far_Auto_Text();
             break;
             case 3:
             Other_Auto_Text();
@@ -324,5 +323,5 @@ void Start_UI()
    pros::screen::set_pen(COLOR_GRAY );
    pros::screen::fill_rect(0,100,480,240);
    Draw_Buttons();
-   Red_Auto_Text();
+   Close_Auto_Text();
 }

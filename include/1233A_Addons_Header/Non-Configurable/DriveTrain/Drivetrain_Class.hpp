@@ -26,7 +26,15 @@ class Drivetrain {
         RPM_PID_Var(double kP_, double kI_, double kD_,  double kF_);
         RPM_PID_Var();
     };
-    public: 
+    struct RPM_Controller_Target{
+        double Left_Speed;
+        double Right_Speed;
+        RPM_Controller_Target(double Left_Speed_ , double Right_Speed_);
+        RPM_Controller_Target();
+    };
+    RPM_Controller_Target Speed_Target;
+    RPM_PID_Var RPM_Var;
+    private: 
     std::vector<pros::Motor> leftMotors;
     std::vector<pros::Motor> rightMotors;
     std::vector<pros::Imu> IMU_List;
@@ -34,7 +42,7 @@ class Drivetrain {
     double Base_Width;
     double Wheel_Diameter;
     double Gear_Ratio;
-    bool RPM_PID_State = false;
+    bool RPM_PID_State = true;
     bool Drivetype = false;
     void Set_Drive_Motors(std::vector<pros::Motor>& motors, double speed);
     void Tank_Control();
@@ -49,10 +57,11 @@ class Drivetrain {
     void Driver_Control();
     void Set_Side_Drivetrain(char side , double speed);
     void Set_Drivetrain(double Left_Side_Speed, double Right_Side_Speed);
+    double Set_Heading(double heading_);
     void Change_Brake_Type(char Type);
     void RPM_Controller(RPM_PID_Var variable);
-    void AutoDrive(double inches, double maxPct, Straight_PID_Var variable);
-    void Auto_Turn(double angle, int maxTurnSp, Turn_PID_Var variable);
+    void Straight(double inches, double maxPct, Straight_PID_Var variable);
+    void Turn(double angle, int maxTurnSp, Turn_PID_Var variable);
 };
 
 

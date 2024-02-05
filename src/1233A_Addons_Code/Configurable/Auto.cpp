@@ -1,17 +1,26 @@
 #include "main.h"
 extern Drivetrain drivetrain;
-Drivetrain::Straight_PID_Var Alfa_Straight(.3,0,0,.15);
-Drivetrain::Turn_PID_Var Alfa_Turn(.6,0,0,true);
-Drivetrain::Turn_PID_Var Beta_Turn(1, 0 ,0,true);
+Drivetrain::Straight_PID_Var Alfa_Straight(.35,0.08,0,.15);
+Drivetrain::Straight_PID_Var Beta_Straight(1,0.05,0.1,.15);
+Drivetrain::Straight_PID_Var Charlie_Straight(.3,0.05,0.1,.6);
+Drivetrain::Turn_PID_Var Alfa_Turn(1.00,0.09,0.0,false);
+Drivetrain::Turn_PID_Var Beta_Turn(1,0,0,true);
+Drivetrain::Turn_PID_Var Charlie_Turn(1.2,0.08,0,true);
+void RPM_Control(){
+    drivetrain.RPM_Var.kP = .05;
+    drivetrain.RPM_Var.kI = 0;
+    drivetrain.RPM_Var.kD = 0;
+    drivetrain.RPM_Var.kF = 1;
+    drivetrain.RPM_Controller(drivetrain.RPM_Var);
+}
 extern int Auto_Num;
 extern int Change;
 extern bool shoot_cata;
 extern bool lower_cata;
+
 void Intake_Out()
 {
-    SetIntake(-127);
-    pros::delay(100);
-    StopIntake();
+    lower_cata = true;
 }
 void Run_Auto()
 {
@@ -75,52 +84,39 @@ void Run_Auto()
         break;
     }
 }
+void Macro_Skill()
+{
+  if((controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)))
+  {
+    drivetrain.Straight(-18,90,Alfa_Straight);
+    drivetrain.Turn(105,100,Alfa_Turn);
+    drivetrain.Straight(3,90,Alfa_Straight);
+    Wings_Out();
+    //Intake_Out();
+    MutiShootCata(50, 126);
+  }
+}
+//Start of close side autos
 void Auton_1()
 {
-    drivetrain.Auto_Turn(48,90, Beta_Turn);
-    pros::delay(100);
-    lower_cata = true;
-    Change = 1800;
-    drivetrain.AutoDrive(28,110, Alfa_Straight);
-    drivetrain.Auto_Turn(0,70, Alfa_Turn);
-    drivetrain.AutoDrive(8,110, Alfa_Straight);
-    drivetrain.AutoDrive(-3,110, Alfa_Straight);
-    Intake_Out();
-    drivetrain.Auto_Turn(270,100, Alfa_Turn);
-    drivetrain.AutoDrive(30,110, Alfa_Straight);
-    drivetrain.Auto_Turn(0,100, Alfa_Turn);
-    SetIntake(127);
-    drivetrain.AutoDrive(38,110, Alfa_Straight);
-    drivetrain.AutoDrive(-4,110, Alfa_Straight);
-    drivetrain.Auto_Turn(90,90, Alfa_Turn);
-    SetIntake(-127);
-    pros::delay(100);
-    drivetrain.AutoDrive(17,110, Alfa_Straight);
-    drivetrain.Auto_Turn(225,90, Alfa_Turn);
-    StopIntake();
     Wings_Out();
-    drivetrain.AutoDrive(42,110, Alfa_Straight);
-    drivetrain.Auto_Turn(280,90, Alfa_Turn);
-    drivetrain.AutoDrive(6,110, Alfa_Straight);
-
+    drivetrain.Straight(-16,30,Alfa_Straight);
+    drivetrain.Turn(45,70,Alfa_Turn);
+    drivetrain.Turn(0,110,Alfa_Turn);
+    Wings_In();
+    drivetrain.Straight(20,100,Alfa_Straight);
+    drivetrain.Turn(315,70,Alfa_Turn);
+    drivetrain.Straight(40,80,Alfa_Straight);
 }
 void Auton_2()
-{
-    Wings_Out();
-    drivetrain.AutoDrive(-16,30,Alfa_Straight);
-    drivetrain.Auto_Turn(45,70,Alfa_Turn);
-    drivetrain.Auto_Turn(0,110,Alfa_Turn);
-    Wings_In();
-    drivetrain.AutoDrive(20,100,Alfa_Straight);
-    drivetrain.Auto_Turn(315,70,Alfa_Turn);
-    drivetrain.AutoDrive(40,80,Alfa_Straight);
-    Intake_Out();
-}
-void Auton_3()
 {
     Intake_Out();
     Wings_Out();
     AutoDrive(48,110);
+}
+void Auton_3()
+{
+
 }
 void Auton_4()
 {
@@ -134,18 +130,40 @@ void Auton_6()
 {
 
 }
-//Start of blue team autos
+//Start of far side autos
 void Auton_7()
 {
-    Auton_1();
+    drivetrain.Turn(48,90, Beta_Turn);
+    pros::delay(100);
+    lower_cata = true;
+    Change = 1800;
+    drivetrain.Straight(28,110, Alfa_Straight);
+    drivetrain.Turn(0,70, Alfa_Turn);
+    drivetrain.Straight(17,110, Alfa_Straight);
+    drivetrain.Straight(-2,110, Alfa_Straight);
+    drivetrain.Turn(280,100, Alfa_Turn);
+    drivetrain.Straight(32,110, Alfa_Straight);
+    drivetrain.Turn(0,100, Alfa_Turn);
+    SetIntake(127);
+    drivetrain.Straight(40,110, Alfa_Straight);
+    drivetrain.Straight(-4,110, Alfa_Straight);
+    drivetrain.Turn(90,90, Alfa_Turn);
+    SetIntake(-127);
+    pros::delay(100);
+    drivetrain.Straight(17,110, Alfa_Straight);
+    drivetrain.Turn(225,90, Alfa_Turn);
+    StopIntake();
+    Wings_Out();
+    drivetrain.Straight(42,110, Alfa_Straight);
+    drivetrain.Turn(265,90, Alfa_Turn);
 }
 void Auton_8()
 {
-    Auton_2();
+
 }
 void Auton_9()
 {
-    Auton_3();
+
 }
 void Auton_10()
 {
@@ -162,14 +180,48 @@ void Auton_12()
 //Start of Other programs
 void Auton_13()
 {
-    Intake_Out();
-    MutiShootCata(60, 80);
+    drivetrain.Straight(-18,90,Alfa_Straight);
+    drivetrain.Turn(105,100,Alfa_Turn);
+    drivetrain.Straight(3,90,Alfa_Straight);
+    Wings_Out();
+    //Intake_Out();
+    MutiShootCata(50, 126);
+    Wings_In();
+    drivetrain.Turn(0,100,Alfa_Turn);
+    drivetrain.Straight(28,90,Alfa_Straight);
+    drivetrain.Turn(135,80,Alfa_Turn);
+    //drivetrain.Set_Heading(0);
+    lower_cata = true;
+    Change = 1800;
+    drivetrain.Straight(-85,80,Charlie_Straight);
+    drivetrain.Turn(90,125,Alfa_Turn);
+    drivetrain.Straight(-40,100,Beta_Straight);
+    drivetrain.Straight(8,100,Alfa_Straight);
+    drivetrain.Turn(135,100,Alfa_Turn);
+    drivetrain.Straight(40,100,Alfa_Straight);
+    drivetrain.Turn(225,100,Alfa_Turn);
+    drivetrain.Straight(35,100,Alfa_Straight);
+    drivetrain.Turn(315,100,Alfa_Turn);
+    Wings_Out();
+    for (size_t i = 0; i < 3; i++)
+    {
+        drivetrain.Straight(40,100,Alfa_Straight);
+        drivetrain.Straight(-39.5,100,Alfa_Straight);
+        drivetrain.Turn(315,100,Alfa_Turn);
+    }
+    Wings_In();
+    drivetrain.Turn(260,100,Alfa_Turn);
+    drivetrain.Straight(68,100,Alfa_Straight);
+    Wings_Out();
+    drivetrain.Turn(135,100,Alfa_Turn);
+    drivetrain.Straight(-35,100,Beta_Straight);
+    drivetrain.Straight(20,100,Beta_Straight);
 }
 //Backup
 void Auton_14()
 {
-    drivetrain.AutoDrive(-40,90,Alfa_Straight);
-    drivetrain.AutoDrive(15,90,Alfa_Straight);
+    drivetrain.Straight(-40,90,Alfa_Straight);
+    drivetrain.Straight(15,90,Alfa_Straight);
 }
 void Auton_15()
 {
@@ -225,7 +277,7 @@ void Auton_16()
 }
 void Auton_17()
 {
-    drivetrain.AutoDrive(4,100, Alfa_Straight);
+    drivetrain.Straight(4,100, Alfa_Straight);
 }
 void Auton_18()
 {

@@ -455,11 +455,3 @@ void AutoDrive(double inches, double maxPct) {
   return;
 
 }
-void Macro_Skill()
-{
-  if((controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)))
-  {
-   pros::delay(500);
-   MutiShootCata(46,95);
-  }
-}

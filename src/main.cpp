@@ -12,6 +12,7 @@ void Catapult_Shooter(void* param) {
      }
  }
 void initialize() {
+	
 	pros::delay(300); 
 	Start_UI();
 	drivetrain.Initialize();
@@ -54,6 +55,7 @@ void competition_initialize() {}
  */
 void autonomous() {
 	Run_Auto();
+	//Auton_13();
 }
 
 /**
@@ -74,9 +76,9 @@ void GUI_Updater(void* param)
 {
 	//Start_GUI();
 }
-
+//extern pros::Task RPM_Task;
 void opcontrol() {
-
+	//RPM_Task.remove();
 	Catapult.set_brake_mode(MOTOR_BRAKE_COAST);
 	pros::Task  GUI_Update(GUI_Updater);
 	drivetrain.Change_Brake_Type('C');

@@ -1,5 +1,7 @@
 #include "main.h"
 void Run_Auto();
+void RPM_Control();
+void Macro_Skill();
 void Auton_1();
 void Auton_2();
 void Auton_3();

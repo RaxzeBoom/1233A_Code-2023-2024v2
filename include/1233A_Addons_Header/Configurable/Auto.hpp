@@ -1,4 +1,11 @@
 #include "main.h"
+struct Auto_Info
+{
+    std::string Name; //Limit X
+    std::string DisplayName; //Limit 13
+    std::vector<std::string> Disciption; //Limit 49 per line
+    void* Current_Auto;
+};    
 void Run_Auto();
 void RPM_Control();
 void Macro_Skill();

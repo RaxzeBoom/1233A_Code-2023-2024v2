@@ -1,7 +1,7 @@
 #include "main.h"
 #include <vector>
 
-    //Makes a Drivetrain Class for controll drivetrain functions{All Left Motor Ports | All Right Motor Ports | The width of the drivetrain | The wheel diamter | Driven gear then Powered gear}
+    //Makes a Drivetrain Class for controlling drivetrain functions{All Left Motor Ports | All Right Motor Ports | All IMUs | The wheel diamter | Driven gear then Powered gear}
     Drivetrain::Drivetrain(const std::vector<int>& leftMotorPorts, const std::vector<int>& rightMotorPorts, const std::vector<int>& IMU_Ports , double WheelDiameter, const std::vector<int> Gears) {
         for (int port : leftMotorPorts) {
             leftMotors.emplace_back(port,pros::E_MOTOR_GEARSET_06 , false , pros::E_MOTOR_ENCODER_DEGREES);
@@ -15,21 +15,25 @@
         Wheel_Diameter = WheelDiameter;
         Gear_Ratio = Gears[0]/Gears[1];
     }
+    //Sets a list of Motors to a set speed up to 127
     void Drivetrain::Set_Drive_Motors(std::vector<pros::Motor>& motors, double speed) {
         for (pros::Motor motor : motors) {
             motor.move(speed);
         }
     }
+    //Give basic tank drive in driver control
     void Drivetrain::Tank_Control()
     {
         Set_Drivetrain(controller.get_analog(ANALOG_LEFT_Y),controller.get_analog(ANALOG_RIGHT_Y));
     }
+    //Give basic split arcade in driver control
     void Drivetrain::Arcade_Control()
     {
         double left = controller.get_analog(ANALOG_LEFT_Y) + controller.get_analog(ANALOG_RIGHT_X);
         double right = controller.get_analog(ANALOG_LEFT_Y) - controller.get_analog(ANALOG_RIGHT_X);
         Set_Drivetrain(left, right);
     }
+    //Lets the driver switct bewteen Tank & arcade using down arrow.
     void Drivetrain::Driver_Control()
     {
         if(Drivetype == false){Tank_Control();} else{Arcade_Control();}
@@ -42,6 +46,7 @@
           } 
         }
     }
+    //More user friendly way to set a side of the drivetrian 'L' or'l' for left & 'R' or 'r' for right
     void Drivetrain::Set_Side_Drivetrain(char side , double speed)
     {
         if(side == 'l' ^ 'L')
@@ -53,16 +58,19 @@
         } else
         { return;}
     }
+    //Sets each side of the drivetrain going from left to right
     void Drivetrain::Set_Drivetrain(double Left_Side_Speed, double Right_Side_Speed)
     {
         Set_Drive_Motors(leftMotors , Left_Side_Speed);
         Set_Drive_Motors(rightMotors , Right_Side_Speed);
     }
+    //Runs basic commands for drivetrain
     void Drivetrain::Initialize(){
         for (pros::Imu IMU : IMU_List){
             IMU.reset();
         }
     }
+    //Resets the Motor positions while stoping them
     void Drivetrain::Reset_Motor_Position()
     {
         for (pros::Motor Motor : leftMotors)
@@ -76,6 +84,7 @@
             Motor.tare_position();
         }
     }
+    //Get the average positions of one side of the drivetrain 'L' or'l' for left & 'R' or 'r' for right
     double Drivetrain::Get_Position(char side)
     {
         double Total_Ticks = 0;
@@ -98,6 +107,7 @@
        
         return 0;
     }   
+    //Get the average RPM of one side of the drivetrain 'L' or'l' for left & 'R' or 'r' for right
     double Drivetrain::Get_RPM(char side)
     {
         double Total_RPM;
@@ -118,6 +128,7 @@
         } 
         return 0;
     }
+    //Get the average heading from the IMU
     double Drivetrain::Get_Heading(){
         double total = 0;
         for(pros::Imu IMU : IMU_List){
@@ -125,7 +136,8 @@
         }
         return total/IMU_List.size();
     }
-    double Drivetrain::Set_Heading(double heading_){
+    //Sets the heading on all IMU
+    void Drivetrain::Set_Heading(double heading_){
         for(pros::Imu IMU : IMU_List){
             IMU.set_heading(heading_);
         }
@@ -163,14 +175,6 @@
             break;
         }
     }
-    Drivetrain::RPM_PID_Var::RPM_PID_Var() {}
-    Drivetrain::RPM_PID_Var::RPM_PID_Var(double kP_, double kI_, double kD_, double kF_)
-    {
-        kP = kP_;
-        kI = kI_;
-        kD = kD_;
-        kF = kF_;
-    };
     Drivetrain::Straight_PID_Var::Straight_PID_Var() {}
     Drivetrain::Straight_PID_Var::Straight_PID_Var(double kP_, double kI_, double kD_, double kA_)
     {
@@ -187,41 +191,15 @@
         kD = kD_;
         Passive_Power = Passive_Power_;
     };
-    Drivetrain::RPM_Controller_Target::RPM_Controller_Target() {}
-    Drivetrain::RPM_Controller_Target::RPM_Controller_Target(double Left_Speed_ , double Right_Speed_)
-    {
-        Left_Speed = Left_Speed_;
-        Right_Speed = Right_Speed_;
+    void Drivetrain::Straight(double speed, double time){
+        Set_Drivetrain(speed,speed);
+        pros::delay(time);
+        Set_Drivetrain(0,0);
     }
-    //A Controller to make the robot drivetrain move at a RPM
-    void Drivetrain::RPM_Controller(RPM_PID_Var variable)
-    {
-        //Defines Left and Right side variables for the PID loop to work.
-        double LsError , RsError;
-        double LsAccError , RsAccError;
-        double LsPrevError , RsPrevError;
-        double LsPower , RsPower;
-        while (true)
-        {
-            //Calculates the error of rpm for left and right side parts of the drivetrain
-            LsError =  Speed_Target.Left_Speed - Get_RPM('l');
-            RsError =  Speed_Target.Right_Speed - Get_RPM('r');
-            //Add the error to the total error
-            LsAccError += LsError, RsAccError += RsError;
-            //Figures out the volts the motor needs to run at
-            LsPower = LsError * variable.kP + LsAccError * variable.kI  
-            + (LsError - LsPrevError) * variable.kD + Speed_Target.Left_Speed * variable.kF;
-            RsPower = RsError * variable.kP + RsAccError * variable.kI  
-            + (RsError - RsPrevError) * variable.kD + Speed_Target.Left_Speed * variable.kF;
-            controller.print(1,1,"%1f %1f \n", Get_RPM('l') , Get_RPM('r'));
-            if(RPM_PID_State == true)
-            {
-                Set_Drivetrain(LsPower, RsPower);
-            }
-            LsPrevError = LsError;
-            RsPrevError = RsError;
-        }
-        
+    void Drivetrain::Straight(std::vector<double> speed, double time){
+        Set_Drivetrain(speed.at(0),speed.at(1));
+        pros::delay(time);
+        Set_Drivetrain(0,0);
     }
     void Drivetrain::Straight(double inches, double maxPct, Straight_PID_Var variable) {
         // Reset the drive and make the brake mode "brake"

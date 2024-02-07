@@ -1,5 +1,6 @@
 #include "main.h"
 bool Toggle_GUI = true;
+/*
 void Drive_Train_Heat_Drawer(int Drive_Train_Heat)
 {
     if(Drive_Train_Heat < 35)
@@ -78,3 +79,4 @@ void Start_GUI()
         pros::delay(1000);
     }
 }
+*/

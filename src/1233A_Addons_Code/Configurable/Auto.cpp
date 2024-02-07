@@ -5,18 +5,90 @@ Drivetrain::Straight_PID_Var Beta_Straight(1,0.05,0.1,.15);
 Drivetrain::Straight_PID_Var Charlie_Straight(.3,0.05,0.1,.6);
 Drivetrain::Turn_PID_Var Alfa_Turn(1.00,0.09,0.0,false);
 Drivetrain::Turn_PID_Var Beta_Turn(1,0,0,true);
-Drivetrain::Turn_PID_Var Charlie_Turn(1.2,0.08,0,true);
-void RPM_Control(){
-    drivetrain.RPM_Var.kP = .05;
-    drivetrain.RPM_Var.kI = 0;
-    drivetrain.RPM_Var.kD = 0;
-    drivetrain.RPM_Var.kF = 1;
-    drivetrain.RPM_Controller(drivetrain.RPM_Var);
-}
+Drivetrain::Turn_PID_Var Charlie_Turn(1.2,0.1,0,true);
 extern int Auto_Num;
 extern int Change;
 extern bool shoot_cata;
 extern bool lower_cata;
+Auto_Info Auto_Programs[] = {
+    //  Name  ,   Display Name  ,  Disciption  ,  Auto that should be ran
+    {"Close Side Winpoint","CS_Win_Point",
+    {"Back up and moves the inside ball from the match",
+     "loading zone then moves forward and touches bar",
+     "pushes the middle triball past line score{4}"},
+    (void*) Auton_1},
+    //-------------------------------------------------
+    {"Close Side Distruption","Disruption",
+    {"Wings Out Moves torwards middle and stops"},
+    (void*) Auton_2},
+    //-------------------------------------------------
+    {"DEFULT 3","Auto 3",
+    {"DEFULT"},
+    (void*) Auton_3},
+    //-------------------------------------------------
+    {"DEFULT 4","Auto 4",
+    {"DEFULT"},
+    (void*) Auton_4},
+    //-------------------------------------------------
+    {"DEFULT 5","Auto 5",
+    {"DEFULT"},
+    (void*) Auton_5},
+    //-------------------------------------------------
+    {"DEFULT 6","Auto 6",
+    {"DEFULT"},
+    (void*) Auton_6},
+    //-------------------------------------------------
+    {"Far Side Winpoint","FS_Win_Point",
+    {"Pushes in red ball, then moves and score ball",
+     "by goal and then touches bar."},
+    (void*) Auton_7},
+    //-------------------------------------------------
+    {"DEFULT 8","Auto 8",
+    {"DEFULT"},
+    (void*) Auton_8},
+    //-------------------------------------------------
+    {"DEFULT 9","Auto 9",
+    {"DEFULT"},
+    (void*) Auton_9},
+    //-------------------------------------------------
+    {"DEFULT 10","Auto 10",
+    {"DEFULT"},
+    (void*) Auton_10},
+    //-------------------------------------------------
+    {"DEFULT 11","Auto 11",
+    {"DEFULT"},
+    (void*) Auton_11},
+    //-------------------------------------------------
+    {"DEFULT 12","Auto 12",
+    {"DEFULT"},
+    (void*) Auton_12},
+    //-------------------------------------------------
+    {"Skills Auto","Skills",
+    {"Shoots 46 times then goes to other side to score",
+     "triball"},
+    (void*) Auton_13},
+    //-------------------------------------------------
+    {"Backup","Back-Up",
+    {"Backs up and them moves forwards"},
+    (void*) Auton_14},
+    //-------------------------------------------------
+    {"DEFULT 15","Auto 15",
+    {"DEFULT"},
+    (void*) Auton_15},
+    //-------------------------------------------------
+    {"DEFULT 16","Auto 16",
+    {"DEFULT"},
+    (void*) Auton_16},
+    //-------------------------------------------------
+    {"Simple Score","Simple Score",
+    {"Moves forward to prevent triball form touching  ",
+     "bot"},
+    (void*) Auton_17},
+    //-------------------------------------------------
+    {"Nothing","Nothing",
+    {"Does Nothing"},
+    (void*) Auton_18},
+};
 
 void Intake_Out()
 {
@@ -24,6 +96,8 @@ void Intake_Out()
 }
 void Run_Auto()
 {
+    Auto_Programs[Auto_Num].Current_Auto;
+    /*
     switch (Auto_Num)
     {
     case 1:
@@ -82,7 +156,7 @@ void Run_Auto()
         break;
     default:
         break;
-    }
+    }*/
 }
 void Macro_Skill()
 {
@@ -112,7 +186,7 @@ void Auton_2()
 {
     Intake_Out();
     Wings_Out();
-    AutoDrive(48,110);
+    drivetrain.Straight(48,110,Alfa_Straight);
 }
 void Auton_3()
 {
@@ -132,6 +206,45 @@ void Auton_6()
 }
 //Start of far side autos
 void Auton_7()
+{
+    lower_cata = true;
+    Change = 1800;
+    SetIntake(127);
+    pros::delay(500);
+    drivetrain.Straight(3,110, Alfa_Straight);
+    drivetrain.Straight(-38,110, Alfa_Straight);
+    drivetrain.Turn(315,90, Beta_Turn);
+    Wings_Out();
+    drivetrain.Straight(-16,110, Alfa_Straight);
+    drivetrain.Turn(240,125, Alfa_Turn);
+    Wings_In();
+    drivetrain.Turn(275,90, Alfa_Turn);
+    drivetrain.Set_Drivetrain(-127,-127);
+    pros::delay(300);
+    drivetrain.Set_Drivetrain(0,0);
+    drivetrain.Straight(3,110, Alfa_Straight);
+    drivetrain.Turn(105,70, Alfa_Turn);
+    SetIntake(-127);
+    drivetrain.Set_Drivetrain(127,127);
+    pros::delay(500);
+    drivetrain.Straight(-5,110, Alfa_Straight);
+    drivetrain.Turn(20,90, Alfa_Turn);
+    SetIntake(127);
+    drivetrain.Straight(60,110, Alfa_Straight);
+    drivetrain.Straight(-8,110, Alfa_Straight);
+    drivetrain.Turn(150,90, Alfa_Turn);
+    drivetrain.Straight(20,110, Alfa_Straight);
+    SetIntake(-127);
+    drivetrain.Turn(45,90, Alfa_Turn);
+    SetIntake(127);
+    drivetrain.Straight(34,110, Alfa_Straight);
+    drivetrain.Turn(180,90, Alfa_Turn);
+    SetIntake(-127);
+    Wings_Out();
+    drivetrain.Straight(70,110, Alfa_Straight);
+    drivetrain.Straight(-10,110, Alfa_Straight);
+}
+void Auton_8()
 {
     drivetrain.Turn(48,90, Beta_Turn);
     pros::delay(100);
@@ -157,10 +270,6 @@ void Auton_7()
     drivetrain.Straight(42,110, Alfa_Straight);
     drivetrain.Turn(265,90, Alfa_Turn);
 }
-void Auton_8()
-{
-
-}
 void Auton_9()
 {
 
@@ -180,42 +289,43 @@ void Auton_12()
 //Start of Other programs
 void Auton_13()
 {
+    drivetrain.Set_Heading(45);
+    drivetrain.Turn(0,100,Alfa_Turn);
     drivetrain.Straight(-18,90,Alfa_Straight);
     drivetrain.Turn(105,100,Alfa_Turn);
     drivetrain.Straight(3,90,Alfa_Straight);
-    Wings_Out();
-    //Intake_Out();
-    MutiShootCata(50, 126);
-    Wings_In();
+    MutiShootCata(0, 126);
     drivetrain.Turn(0,100,Alfa_Turn);
     drivetrain.Straight(28,90,Alfa_Straight);
-    drivetrain.Turn(135,80,Alfa_Turn);
-    //drivetrain.Set_Heading(0);
+    drivetrain.Turn(315,60,Alfa_Turn);
+    drivetrain.Set_Heading(drivetrain.Get_Heading() - 315);
     lower_cata = true;
     Change = 1800;
-    drivetrain.Straight(-85,80,Charlie_Straight);
-    drivetrain.Turn(90,125,Alfa_Turn);
-    drivetrain.Straight(-40,100,Beta_Straight);
-    drivetrain.Straight(8,100,Alfa_Straight);
+    drivetrain.Straight(85,100,Alfa_Straight);
     drivetrain.Turn(135,100,Alfa_Turn);
-    drivetrain.Straight(40,100,Alfa_Straight);
-    drivetrain.Turn(225,100,Alfa_Turn);
-    drivetrain.Straight(35,100,Alfa_Straight);
-    drivetrain.Turn(315,100,Alfa_Turn);
+    drivetrain.Straight(-40,100,Beta_Straight);
+    drivetrain.Straight(4,100,Alfa_Straight);
+    drivetrain.Turn(190,100,Alfa_Turn);
+    drivetrain.Straight(45,100,Alfa_Straight);
+    drivetrain.Turn(270,100,Alfa_Turn);
+    drivetrain.Straight(28,100,Alfa_Straight);
+    drivetrain.Turn(0,80,Alfa_Turn);
     Wings_Out();
-    for (size_t i = 0; i < 3; i++)
+    for (size_t i = 0; i < 2; i++)
     {
-        drivetrain.Straight(40,100,Alfa_Straight);
-        drivetrain.Straight(-39.5,100,Alfa_Straight);
-        drivetrain.Turn(315,100,Alfa_Turn);
+        drivetrain.Straight(127,620);
+        drivetrain.Straight(-37.5,100,Alfa_Straight);
+        drivetrain.Turn(0,80,Charlie_Turn);
     }
     Wings_In();
-    drivetrain.Turn(260,100,Alfa_Turn);
-    drivetrain.Straight(68,100,Alfa_Straight);
-    Wings_Out();
-    drivetrain.Turn(135,100,Alfa_Turn);
-    drivetrain.Straight(-35,100,Beta_Straight);
-    drivetrain.Straight(20,100,Beta_Straight);
+    drivetrain.Turn(300,100,Alfa_Turn);
+    drivetrain.Straight(74,100,Alfa_Straight);
+    drivetrain.Turn(265,100,Alfa_Turn);
+    drivetrain.Straight(127,800);
+    drivetrain.Turn(180,40,Alfa_Turn);
+    Hang_Out();
+    drivetrain.Straight(127,1500);
+    Hang_In();
 }
 //Backup
 void Auton_14()

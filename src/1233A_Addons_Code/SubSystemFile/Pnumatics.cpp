@@ -27,26 +27,6 @@ void Hang_In()
     Hang.set_value(false);
 }
 //Driver Controller Functions
-/*void Intake_Lift_Driver_Control()
-{
-    if((controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)))
-    {
-    if(Intake_Toggle == false)
-        {
-         Intake_Out();
-          Intake_Toggle = true;
-        }
-         else
-        {
-          Intake_In();
-          Intake_Toggle = false;
-        }
-    }
-    while((controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)))
-    {
-        pros::delay(10);
-    }
-}*/
 void Wings_Driver_Control()
 {
     if((controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)))

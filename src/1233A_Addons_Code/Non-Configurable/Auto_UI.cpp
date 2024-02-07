@@ -1,4 +1,5 @@
 #include "main.h"
+extern Auto_Info Auto_Programs[];
 int Color_Num = 1;
 int Button_Num = 1;
 int Auto_Num = 1;
@@ -40,18 +41,43 @@ void Draw_Buttons()
     pros::screen::draw_rect(190,180,290,230);
     pros::screen::draw_rect(370,180,470,230);
 }
+//Return a string from the Auto_Progrmas 'N' or 'n' For name 'D' or 'd' and black for Discription
+std::string Call_Text(int num , int size , char type)
+{
+    num--;
+    std::string Curr_String;
+    if(type == 'N' || 'n')
+    {Curr_String = Auto_Programs[num].Name;}
+    if(type == 'D' || 'd')
+    {Curr_String = Auto_Programs[num].DisplayName;}   
+    Curr_String.std::string::resize(size);
+    return Curr_String;
+}
+std::vector<std::string> Call_Text(int num , int size)
+{
+    num--;
+    std::vector<std::string> Curr_String;
+    for (std::string line : Auto_Programs[num].Disciption)
+    {
+        line.std::string::resize(size);
+        Curr_String.emplace_back(line);
+    }
+    return Curr_String;
+}
+
 void Close_Auto_Text()
 {
+
     //Turns the Top Red and put in in auto names
     pros::screen::set_pen(COLOR_GREEN);
     pros::screen::fill_rect(0,0,480,100);
     pros::screen::set_pen(COLOR_GREEN);
-    pros::screen::print(pros::E_TEXT_SMALL,12,115,"Far Side    ");
-    pros::screen::print(pros::E_TEXT_SMALL,192,115,"Close Side  ");
-    pros::screen::print(pros::E_TEXT_SMALL,372,115,"Distruption ");
-    pros::screen::print(pros::E_TEXT_SMALL,12,185,"Auto 4 ");
-    pros::screen::print(pros::E_TEXT_SMALL,192,185,"Auto 5 ");
-    pros::screen::print(pros::E_TEXT_SMALL,372,185,"Auto 6 ");
+    pros::screen::print(pros::E_TEXT_SMALL,12,115,"%S",Call_Text(0,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,192,115,"%S",Call_Text(1,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,372,115,"%S",Call_Text(2,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,12,185,"%S",Call_Text(3,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,192,185,"%S",Call_Text(4,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,372,185,"%S",Call_Text(5,13,'D'));
     //Redo the top three Rectangles
     Top_Buttons();
     Color_Num = 1;
@@ -62,12 +88,12 @@ void Far_Auto_Text()
     pros::screen::set_pen(COLOR_RED);
     pros::screen::fill_rect(0,0,480,100);
     pros::screen::set_pen(COLOR_GREEN);
-    pros::screen::print(pros::E_TEXT_SMALL,12,115,"Far Side    ");
-    pros::screen::print(pros::E_TEXT_SMALL,192,115,"Close Side  ");
-    pros::screen::print(pros::E_TEXT_SMALL,372,115,"Distruption ");
-    pros::screen::print(pros::E_TEXT_SMALL,12,185,"Auto 10");
-    pros::screen::print(pros::E_TEXT_SMALL,192,185,"Auto 11");
-    pros::screen::print(pros::E_TEXT_SMALL,372,185,"Auto 12");
+    pros::screen::print(pros::E_TEXT_SMALL,12,115,"%S",Call_Text(6,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,192,115,"%S",Call_Text(7,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,372,115,"%S",Call_Text(8,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,12,185,"%S",Call_Text(9,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,192,185,"%S",Call_Text(10,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,372,185,"%S",Call_Text(11,13,'D'));
     //Redo the top three Rectangles
     Top_Buttons();
     Color_Num = 2;
@@ -78,12 +104,12 @@ void Other_Auto_Text()
     pros::screen::set_pen(COLOR_BLACK);
     pros::screen::fill_rect(0,0,480,100);
     pros::screen::set_pen(COLOR_GREEN);
-    pros::screen::print(pros::E_TEXT_SMALL,12,115,"Skills      ");
-    pros::screen::print(pros::E_TEXT_SMALL,192,115,"Back-Up     ");
-    pros::screen::print(pros::E_TEXT_SMALL,372,115,"Auto 15");
-    pros::screen::print(pros::E_TEXT_SMALL,12,185,"Auto 16");
-    pros::screen::print(pros::E_TEXT_SMALL,192,185,"Simple Score");
-    pros::screen::print(pros::E_TEXT_SMALL,372,185,"Nothing    " );
+    pros::screen::print(pros::E_TEXT_SMALL,12,115,"%S",Call_Text(12,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,192,115,"%S",Call_Text(13,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,372,115,"%S",Call_Text(14,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,12,185,"%S",Call_Text(15,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,192,185,"%S",Call_Text(16,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,372,185,"%S",Call_Text(17,13,'D'));
     //Redo the top three Rectangles
     Top_Buttons();
     Color_Num = 3;
@@ -104,111 +130,13 @@ void NAME_Printer(std::string NAME)
 }
 void Auton_Checker(int num)
 {
-    switch (Auto_Num)
-    {
-    case 1:
-        NAME_Printer("Close Side Winpoint");
-        DIS_Printer(0,
-        {"Back up and moves the inside ball from the match",
-         "loading zone then moves forward and touches bar"});
-        break;
-    case 2:
-        NAME_Printer("Close Side Distruption");
-        DIS_Printer(0,
-        {"Wings Out Moves torwards middle and stops"});
-        break;
-    case 3:
-        NAME_Printer("DEFULT 3");
-        DIS_Printer(0,
-        {"DEFULT"});
-        break;
-    case 4:
-        NAME_Printer("DEFULT 4");
-        DIS_Printer(0,
-        {"DEFULT"});
-        break;
-    case 5:
-        NAME_Printer("DEFULT 5");
-        DIS_Printer(0,
-        {"DEFULT"});
-        break;
-    case 6:
-        NAME_Printer("DEFULT 6");
-        DIS_Printer(0,
-        {"DEFULT"});
-        break;
-    //BLUE AUTOS
-    case 7:
-        NAME_Printer("Far Side Winpoint");
-        DIS_Printer(0,
-        {"Pushes in red ball, then moves and score ball",
-         "by goal and then touches bar."});
-        break;
-    case 8:
-        NAME_Printer("DEFULT 8");
-        DIS_Printer(0,
-        {"DEFULT"});
-        break;
-    case 9:
-        NAME_Printer("DEFULT 9");
-        DIS_Printer(0,
-        {"DEFULT"});
-        break;
-    case 10:
-        NAME_Printer("DEFULT 10");
-        DIS_Printer(0,
-        {"DEFULT"});
-        break;
-    case 11:
-        NAME_Printer("DEFULT 11");
-        DIS_Printer(0,
-        {"DEFULT"});
-        break;
-    case 12:
-        NAME_Printer("DEFULT 12");
-        DIS_Printer(0,
-        {"DEFULT"});
-        break;
-    //OTHER AUTOS
-    case 13:
-        NAME_Printer("Skills Auto");
-        DIS_Printer(0,
-        {"Shoots 46 times then goes to other side to score",
-         "triball"});
-        break;
-    case 14:
-        NAME_Printer("Backup");
-        DIS_Printer(0,
-        {"Backs up and them moves forwards"});
-        break;
-    case 15:
-        NAME_Printer("DEFULT 15");
-        DIS_Printer(0,
-        {"DEFULT"});
-        break;
-    case 16:
-        NAME_Printer("DEFULT 16");
-        DIS_Printer(0,
-        {"DEFULT"});
-        break;
-    case 17:
-        NAME_Printer("Simple Score");
-        DIS_Printer(0,
-        {"Moves forward to prevent triball form touching  ",
-         "bot"});
-        break;
-    case 18:
-        NAME_Printer("Nothing");
-        DIS_Printer(0,
-        {"Does Nothing"});
-        break;
-    default:
-        break;
-    }
+
+    NAME_Printer(Call_Text(num,25,'N'));
+    DIS_Printer(0,Call_Text(num,49));
 }
 void menu()
 {
-    pros::screen::set_pen(COLOR_GRAY);
+    pros::screen::set_pen(COLOR_LIGHT_GRAY);
     pros::screen::fill_rect(0,0,480,240);
     pros::screen::set_pen(COLOR_RED);
     pros::screen::fill_rect(0,160,240,240);
@@ -217,7 +145,6 @@ void menu()
     pros::screen::set_pen(COLOR_BLACK);
     pros::screen::draw_rect(0,160,240,240);
     pros::screen::draw_rect(240,160,480,240);
-    pros::screen::set_pen(COLOR_WHITE);
     pros::screen::print(pros::E_TEXT_LARGE,80,185,"Back");
     pros::screen::print(pros::E_TEXT_LARGE,320,185,"Ready");
     Auton_Checker(Auto_Num);
@@ -322,6 +249,7 @@ void Start_UI()
 {
    pros::screen::set_pen(COLOR_GRAY );
    pros::screen::fill_rect(0,100,480,240);
+   pros::screen::set_eraser(COLOR_GRAY);
    Draw_Buttons();
    Close_Auto_Text();
 }

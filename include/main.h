@@ -76,12 +76,10 @@ void opcontrol(void);
  */
 #include "1233A_Addons_Header/Port.hpp"
 #include "1233A_Addons_Header/Configurable/globals.hpp"
-#include "1233A_Addons_Header/Non-Configurable/DriveTrain/Drivetrain.hpp"
-#include "1233A_Addons_Header/Non-Configurable/DriveTrain/Drivetrainports.hpp"
-#include "1233A_Addons_Header/Configurable/Drivetrain_Config.hpp"
 #include "1233A_Addons_Header/SubSystemHeader/Catapult.hpp"
 #include "1233A_Addons_Header/SubSystemHeader/Intake.hpp"
 #include "1233A_Addons_Header/SubSystemHeader/pnumatics.hpp"
+#include "1233A_Addons_Header/SubSystemHeader/pnumatics_Class.hpp"
 #include "1233A_Addons_Header/Configurable/Auto.hpp"
 #include "1233A_Addons_Header/Non-Configurable/Auto_UI.hpp"
 #include "1233A_Addons_Header/Non-Configurable/GUI.hpp"

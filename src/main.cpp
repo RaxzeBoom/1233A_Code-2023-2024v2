@@ -54,8 +54,8 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	Run_Auto();
-	//Auton_13();
+	//Run_Auto();
+	Auton_13();
 }
 
 /**

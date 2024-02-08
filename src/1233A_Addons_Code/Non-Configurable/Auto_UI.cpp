@@ -130,7 +130,6 @@ void NAME_Printer(std::string NAME)
 }
 void Auton_Checker(int num)
 {
-
     NAME_Printer(Call_Text(num,25,'N'));
     DIS_Printer(0,Call_Text(num,49));
 }

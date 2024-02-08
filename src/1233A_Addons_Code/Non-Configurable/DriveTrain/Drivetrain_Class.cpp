@@ -284,7 +284,7 @@
             {
                 accumulativeError = 0;
             }
-            if(fabs(error) > 15)
+            if(fabs(error) > 150)
             {
                 accumulativeError = 0;
             }

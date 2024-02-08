@@ -1,5 +1,12 @@
 #include "main.h"
+
+//Define Drivetrain & pnumatics here
 Drivetrain drivetrain({-10,-9,-8} , {6,15,2} , {18} , 2.75, {48,36});
+//Pnumatics wings({'H'},pros::E_CONTROLLER_DIGITAL_B,false);
+//Pnumatics hang({'G'},pros::E_CONTROLLER_DIGITAL_X ,false);
+//---------------------------------------------------------
+
+
 void UI_Touch() {
 	 pros::screen_touch_status_s_t status = pros::screen::touch_status();
 	 pros::screen::set_pen(COLOR_GREEN);
@@ -84,8 +91,6 @@ void opcontrol() {
 	drivetrain.Change_Brake_Type('C');
 	while (true) {
 		
-		//controller.print(1,1,"%d   ",drivetrain.leftMotors[0].get_position());
-
 		Macro_Skill();
 		drivetrain.Driver_Control();
 		setCatapultMotors();

@@ -1,15 +1,6 @@
 #include "main.h"
-bool Intake_Toggle = false;
 bool Wings_Toggle = false;
 bool Hang_Toggle = false;
-/*
-void Intake_Out() {
-    Intake_Lift.set_value(true);
-}
-void Intake_In()
-{
-    Intake_Lift.set_value(false);
-}*/
 void Wings_Out()
 {
     Wing.set_value(true);

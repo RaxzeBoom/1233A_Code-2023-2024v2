@@ -208,7 +208,7 @@ void Auton_6()
 void Auton_7()
 {
     lower_cata = true;
-    Change = 1800;
+    Change = 1500;
     SetIntake(127);
     pros::delay(500);
     drivetrain.Straight(3,110, Alfa_Straight);
@@ -249,7 +249,7 @@ void Auton_8()
     drivetrain.Turn(48,90, Beta_Turn);
     pros::delay(100);
     lower_cata = true;
-    Change = 1800;
+    Change = 1500;
     drivetrain.Straight(28,110, Alfa_Straight);
     drivetrain.Turn(0,70, Alfa_Turn);
     drivetrain.Straight(17,110, Alfa_Straight);
@@ -300,7 +300,7 @@ void Auton_13()
     drivetrain.Turn(315,60,Alfa_Turn);
     drivetrain.Set_Heading(drivetrain.Get_Heading() - 315);
     lower_cata = true;
-    Change = 1800;
+    Change = 1500;
     drivetrain.Straight(85,100,Alfa_Straight);
     drivetrain.Turn(135,100,Alfa_Turn);
     drivetrain.Straight(-40,100,Beta_Straight);
@@ -391,5 +391,5 @@ void Auton_17()
 }
 void Auton_18()
 {
-
+    //Do nothing
 }

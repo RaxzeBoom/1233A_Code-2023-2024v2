@@ -1,5 +1,4 @@
 #include "main.h"
-#include <vector>
 
     //Makes a Drivetrain Class for controlling drivetrain functions{All Left Motor Ports | All Right Motor Ports | All IMUs | The wheel diamter | Driven gear then Powered gear}
     Drivetrain::Drivetrain(const std::vector<int>& leftMotorPorts, const std::vector<int>& rightMotorPorts, const std::vector<int>& IMU_Ports , double WheelDiameter, const std::vector<int> Gears) {
@@ -191,111 +190,65 @@
         kD = kD_;
         Passive_Power = Passive_Power_;
     };
-    void Drivetrain::Straight(double speed, double time){
+    void Drivetrain::driveDistance(double speed, double time){
         Set_Drivetrain(speed,speed);
         pros::delay(time);
         Set_Drivetrain(0,0);
     }
-    void Drivetrain::Straight(std::vector<double> speed, double time){
+    void Drivetrain::driveDistance(std::vector<double> speed, double time){
         Set_Drivetrain(speed.at(0),speed.at(1));
         pros::delay(time);
         Set_Drivetrain(0,0);
     }
-    void Drivetrain::Straight(double inches, double maxPct, Straight_PID_Var variable) {
-        // Reset the drive and make the brake mode "brake"
-        int dir = 0;
-        Change_Brake_Type('H');
-        Reset_Motor_Position();
-        if(inches<0)
-        {
-            dir = 1;
-        }
-        inches = abs(inches);
-        // Initialize variables
-        const int target = (inches / (Wheel_Diameter * 3.14)) * 360 * 1.1; // Target distance converted from inches to encoder ticks; double after 360 is a constant tuned for the robot
-        int lAvgTicks = 0; // Left average encoder ticks, needed for alignment
-        int rAvgTicks = 0; // Right average encoder ticks, needed for alignment
-        int avgTicks = 0; // Overall average encoder ticks
-        float currentPower = 0; // Current power to be supplied to the motors
-        float lPower = 0; // Left power for the left drive side, needed b/c of alignment
-        float rPower = 0; // Right power for the rigth drive side, needed b/c of alignment
-        float alignErr = 0; // Alignment error calculated to align each side of the robot
+    void Drivetrain::driveDistance(double inches, double maxPct, Straight_PID_Var variable) {
+    Change_Brake_Type('B');
+    Reset_Motor_Position();
 
-        // PID constants
-        double kP = variable.kP; // Distance from target * kP
-        if (inches < 12) kP *= 2; // Increase kP if driving a short distance
-        double kI = variable.kI; // Not really necessary, but implemented in case its needed // Total accumulative distance from target * kI
-        double kD = variable.kD; // Difference between current distance from target and previous distance from target * kD
-        double kA = variable.kA; // Alignment constant
-        double error = 0.0; // Distance from target in current iteration
-        double prevError = 0.0; // Distance from target from previous iteration
-        double accumulativeError = 0.0; // Total of every calculated error combined
+    // Direction handling
+    int direction = (inches < 0) ? -1 : 1;
+    inches = fabs(inches);
 
-        while(fabs(avgTicks) < fabs(target))
-        {
-            // PID moment
-            currentPower = error*kP + accumulativeError*kI + (error-prevError)*kD;
+    // Constants and initial calculations
+    const double target = (inches / (Wheel_Diameter * M_PI)) * 360 * 1.1 * direction;
 
-            // Limit the current power to the allowed maximum
-            if (currentPower > maxPct) {
-            currentPower = maxPct;
-            } else if (currentPower < 5) {
-            currentPower = 5;
-            }
+    // PID constants, adjust or utilize as passed from the structure
+    double kP = variable.kP * (inches < 12 ? 2 : 1);
+    double kI = variable.kI, kD = variable.kD, kA = variable.kA;
 
-            // Align each drive side
-            alignErr = fabs((lAvgTicks - rAvgTicks)) * kA; // Calculate the alignment error between the two sides
-            if(lAvgTicks > rAvgTicks) // If left is ahead of right
-            {
-            lPower = currentPower - alignErr;
-            rPower = currentPower;
-            }
-            else if(rAvgTicks > lAvgTicks) // If right is ahead of left
-            {
-            rPower = currentPower - alignErr;
-            lPower = currentPower;
-            }
-            else // If neither is ahead
-            {
-            lPower = currentPower;
-            rPower = currentPower;
-            }
+    // Initialize encoder readings and PID variables
+    double lAvgTicks = 0, rAvgTicks = 0, avgTicks = 0;
+    double error = 0, prevError = 0, accumulativeError = 0;
 
-            // Reverse the speeds if a backwards direction is passed to the function
-            if(dir == 1)
-            {
-            lPower = lPower * -1;
-            rPower = rPower * -1;
-            }
+    while (fabs(avgTicks) < fabs(target)) {
+        // Calculate PID output
+        double currentPower = error * kP + accumulativeError * kI + (error - prevError) * kD;
+        currentPower = std::min(std::max(currentPower, 5.0), maxPct); // Constrain power within bounds
 
+        // Alignment adjustment
+        double alignErr = fabs(lAvgTicks - rAvgTicks) * kA;
+        double lPower = currentPower - (lAvgTicks > rAvgTicks ? alignErr : 0);
+        double rPower = currentPower - (rAvgTicks > lAvgTicks ? alignErr : 0);
 
-            // Make the motors move
-            Set_Drivetrain(lPower,rPower);
+        // Apply direction and set motor powers
+        Set_Drivetrain(lPower * direction, rPower * direction);
 
-            // Update the average ticks for the next iteration
-            rAvgTicks = fabs(Get_Position('r'));
-            lAvgTicks = fabs(Get_Position('l'));
-            avgTicks = (rAvgTicks + lAvgTicks)/2;
+        // Update encoders and error for next iteration
+        lAvgTicks = fabs(Get_Position('l'));
+        rAvgTicks = fabs(Get_Position('r'));
+        avgTicks = (lAvgTicks + rAvgTicks) / 2;
+        prevError = error;
+        error = target - avgTicks * direction; // Adjust for direction
 
-            // Update the PID variables
-            prevError = error; // Set the previous error to the current error before it is updated
-            accumulativeError += prevError; // Add the previous error to the accumuilative error; can't add the current error because that is current, not what it has already driven
-            if(fabs(error) < .5)
-            {
-                accumulativeError = 0;
-            }
-            if(fabs(error) > 150)
-            {
-                accumulativeError = 0;
-            }
-            error = target - avgTicks; // Update current error
-            
-            // Wait to save brain resources
-            pros::delay(10);
-        }
-        Reset_Motor_Position(); // Reset the drive encoders and stop all of the motors after driving is completed
-        }
-    void Drivetrain::Turn(double angle, int maxTurnSp, Turn_PID_Var variable) {
+        // Reset accumulative error under specific conditions
+        if(fabs(error) < 0.5 || fabs(error) > 150) accumulativeError = 0;
+        else accumulativeError += error;
+
+        pros::delay(10); // Delay to save resources
+    }
+
+    Reset_Motor_Position(); // Reset motors and encoders at the end
+    }
+    void Drivetrain::Turn(double angle, double maxTurnSp, Turn_PID_Var variable) {
         Reset_Motor_Position();
         Change_Brake_Type('B');
         // Determine which way to turn

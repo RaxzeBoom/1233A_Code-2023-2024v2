@@ -43,10 +43,10 @@ class Drivetrain {
     double Get_Heading();
     void Set_Heading(double heading_);
     void Change_Brake_Type(char Type);
-    void Straight(double speed, double time);
-    void Straight(std::vector<double> speed, double time);
-    void Straight(double inches, double maxPct, Straight_PID_Var variable);
-    void Turn(double angle, int maxTurnSp, Turn_PID_Var variable);
+    void driveDistance(double speed, double time);
+    void driveDistance(std::vector<double> speed, double time);
+    void driveDistance(double inches, double maxPct, Straight_PID_Var variable);
+    void Turn(double angle, double maxTurnSp, Turn_PID_Var variable);
 };
 
 

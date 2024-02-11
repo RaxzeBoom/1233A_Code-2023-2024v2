@@ -1,9 +1,8 @@
 #include "main.h"
 
 //Define Drivetrain & pnumatics here
-Drivetrain drivetrain({-10,-9,-8} , {6,15,2} , {18} , 2.75, {48,36});
-//Pnumatics wings({'H'},pros::E_CONTROLLER_DIGITAL_B,false);
-//Pnumatics hang({'G'},pros::E_CONTROLLER_DIGITAL_X ,false);
+
+
 //---------------------------------------------------------
 
 
@@ -59,10 +58,10 @@ void competition_initialize() {}
  * If the robot is disabled or communications is lost, the autonomous task
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
- */
+ */ 
 void autonomous() {
-	//Run_Auto();
-	Auton_13();
+	Run_Auto();
+	//Auton_1();
 }
 
 /**
@@ -85,18 +84,17 @@ void GUI_Updater(void* param)
 }
 //extern pros::Task RPM_Task;
 void opcontrol() {
-	//RPM_Task.remove();
 	Catapult.set_brake_mode(MOTOR_BRAKE_COAST);
 	pros::Task  GUI_Update(GUI_Updater);
 	drivetrain.Change_Brake_Type('C');
 	while (true) {
 		
-		Macro_Skill();
+		Marco_Skills();
 		drivetrain.Driver_Control();
 		setCatapultMotors();
 		Driver_Intake();
-		Wings_Driver_Control();
-		Hang_Driver_Control();
+		wings.Control();
+		hang.Control();
 		pros::delay(20);
 
 	}

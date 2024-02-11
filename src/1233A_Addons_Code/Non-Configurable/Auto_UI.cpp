@@ -72,12 +72,13 @@ void Close_Auto_Text()
     pros::screen::set_pen(COLOR_GREEN);
     pros::screen::fill_rect(0,0,480,100);
     pros::screen::set_pen(COLOR_GREEN);
-    pros::screen::print(pros::E_TEXT_SMALL,12,115,"%S",Call_Text(0,13,'D'));
-    pros::screen::print(pros::E_TEXT_SMALL,192,115,"%S",Call_Text(1,13,'D'));
-    pros::screen::print(pros::E_TEXT_SMALL,372,115,"%S",Call_Text(2,13,'D'));
-    pros::screen::print(pros::E_TEXT_SMALL,12,185,"%S",Call_Text(3,13,'D'));
-    pros::screen::print(pros::E_TEXT_SMALL,192,185,"%S",Call_Text(4,13,'D'));
-    pros::screen::print(pros::E_TEXT_SMALL,372,185,"%S",Call_Text(5,13,'D'));
+    pros::screen::set_eraser(COLOR_BLACK);
+    pros::screen::print(pros::E_TEXT_SMALL,12,115,"%S",Call_Text(1,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,192,115,"%S",Call_Text(2,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,372,115,"%S",Call_Text(3,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,12,185,"%S",Call_Text(4,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,192,185,"%S",Call_Text(5,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,372,185,"%S",Call_Text(6,13,'D'));
     //Redo the top three Rectangles
     Top_Buttons();
     Color_Num = 1;
@@ -88,12 +89,13 @@ void Far_Auto_Text()
     pros::screen::set_pen(COLOR_RED);
     pros::screen::fill_rect(0,0,480,100);
     pros::screen::set_pen(COLOR_GREEN);
-    pros::screen::print(pros::E_TEXT_SMALL,12,115,"%S",Call_Text(6,13,'D'));
-    pros::screen::print(pros::E_TEXT_SMALL,192,115,"%S",Call_Text(7,13,'D'));
-    pros::screen::print(pros::E_TEXT_SMALL,372,115,"%S",Call_Text(8,13,'D'));
-    pros::screen::print(pros::E_TEXT_SMALL,12,185,"%S",Call_Text(9,13,'D'));
-    pros::screen::print(pros::E_TEXT_SMALL,192,185,"%S",Call_Text(10,13,'D'));
-    pros::screen::print(pros::E_TEXT_SMALL,372,185,"%S",Call_Text(11,13,'D'));
+    pros::screen::set_eraser(COLOR_BLACK);
+    pros::screen::print(pros::E_TEXT_SMALL,12,115,"%S",Call_Text(7,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,192,115,"%S",Call_Text(8,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,372,115,"%S",Call_Text(9,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,12,185,"%S",Call_Text(10,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,192,185,"%S",Call_Text(11,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,372,185,"%S",Call_Text(12,13,'D'));
     //Redo the top three Rectangles
     Top_Buttons();
     Color_Num = 2;
@@ -104,12 +106,13 @@ void Other_Auto_Text()
     pros::screen::set_pen(COLOR_BLACK);
     pros::screen::fill_rect(0,0,480,100);
     pros::screen::set_pen(COLOR_GREEN);
-    pros::screen::print(pros::E_TEXT_SMALL,12,115,"%S",Call_Text(12,13,'D'));
-    pros::screen::print(pros::E_TEXT_SMALL,192,115,"%S",Call_Text(13,13,'D'));
-    pros::screen::print(pros::E_TEXT_SMALL,372,115,"%S",Call_Text(14,13,'D'));
-    pros::screen::print(pros::E_TEXT_SMALL,12,185,"%S",Call_Text(15,13,'D'));
-    pros::screen::print(pros::E_TEXT_SMALL,192,185,"%S",Call_Text(16,13,'D'));
-    pros::screen::print(pros::E_TEXT_SMALL,372,185,"%S",Call_Text(17,13,'D'));
+    pros::screen::set_eraser(COLOR_BLACK);
+    pros::screen::print(pros::E_TEXT_SMALL,12,115,"%S",Call_Text(13,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,192,115,"%S",Call_Text(14,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,372,115,"%S",Call_Text(15,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,12,185,"%S",Call_Text(16,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,192,185,"%S",Call_Text(17,13,'D'));
+    pros::screen::print(pros::E_TEXT_SMALL,372,185,"%S",Call_Text(18,13,'D'));
     //Redo the top three Rectangles
     Top_Buttons();
     Color_Num = 3;
@@ -135,6 +138,7 @@ void Auton_Checker(int num)
 }
 void menu()
 {
+    
     pros::screen::set_pen(COLOR_LIGHT_GRAY);
     pros::screen::fill_rect(0,0,480,240);
     pros::screen::set_pen(COLOR_RED);
@@ -144,8 +148,11 @@ void menu()
     pros::screen::set_pen(COLOR_BLACK);
     pros::screen::draw_rect(0,160,240,240);
     pros::screen::draw_rect(240,160,480,240);
+    pros::screen::set_eraser(COLOR_RED);
     pros::screen::print(pros::E_TEXT_LARGE,80,185,"Back");
+    pros::screen::set_eraser(COLOR_GREEN);
     pros::screen::print(pros::E_TEXT_LARGE,320,185,"Ready");
+    pros::screen::set_eraser(COLOR_LIGHT_GRAY);
     Auton_Checker(Auto_Num);
     Touch_Checker_NUM = 1;
 }
@@ -248,7 +255,6 @@ void Start_UI()
 {
    pros::screen::set_pen(COLOR_GRAY );
    pros::screen::fill_rect(0,100,480,240);
-   pros::screen::set_eraser(COLOR_GRAY);
    Draw_Buttons();
    Close_Auto_Text();
 }

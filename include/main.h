@@ -75,15 +75,15 @@ void opcontrol(void);
  * You can add C++-only headers here
  */
 #include "1233A_Addons_Header/Port.hpp"
+#include "1233A_Addons_Header/Non-Configurable/Classes/Drivetrain_Class.hpp"
+#include "1233A_Addons_Header/Non-Configurable/Classes/Pnumatics_Class.hpp"
 #include "1233A_Addons_Header/Configurable/globals.hpp"
 #include "1233A_Addons_Header/SubSystemHeader/Catapult.hpp"
 #include "1233A_Addons_Header/SubSystemHeader/Intake.hpp"
-#include "1233A_Addons_Header/SubSystemHeader/pnumatics.hpp"
-#include "1233A_Addons_Header/SubSystemHeader/pnumatics_Class.hpp"
 #include "1233A_Addons_Header/Configurable/Auto.hpp"
 #include "1233A_Addons_Header/Non-Configurable/Auto_UI.hpp"
 #include "1233A_Addons_Header/Non-Configurable/GUI.hpp"
-#include "1233A_Addons_Header/Non-Configurable/DriveTrain/Drivetrain_Class.hpp"
+
 //#include <iostream>
 #endif
 

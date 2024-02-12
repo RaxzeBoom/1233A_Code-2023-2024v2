@@ -77,6 +77,7 @@ void opcontrol(void);
 #include "1233A_Addons_Header/Port.hpp"
 #include "1233A_Addons_Header/Non-Configurable/Classes/Drivetrain_Class.hpp"
 #include "1233A_Addons_Header/Non-Configurable/Classes/Pnumatics_Class.hpp"
+#include "1233A_Addons_Header/Non-Configurable/Classes/Odometry_Class.hpp"
 #include "1233A_Addons_Header/Configurable/globals.hpp"
 #include "1233A_Addons_Header/SubSystemHeader/Catapult.hpp"
 #include "1233A_Addons_Header/SubSystemHeader/Intake.hpp"

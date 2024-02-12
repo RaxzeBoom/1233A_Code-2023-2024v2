@@ -18,6 +18,12 @@ class Drivetrain {
         Turn_PID_Var(double kP_, double kI_, double kD_,  bool Passive_Power_);
         Turn_PID_Var();
     };
+    enum Brake_Type{
+        HOLD,
+        BRAKE,
+        COAST
+    };
+
     private: 
     std::vector<pros::Motor> leftMotors;
     std::vector<pros::Motor> rightMotors;
@@ -26,6 +32,7 @@ class Drivetrain {
     double Base_Width;
     double Wheel_Diameter;
     double Gear_Ratio;
+    double Target_Heading;
     bool RPM_PID_State = true;
     bool Drivetype = false;
     void Set_Drive_Motors(std::vector<pros::Motor>& motors, double speed);
@@ -42,7 +49,7 @@ class Drivetrain {
     void Set_Drivetrain(double Left_Side_Speed, double Right_Side_Speed);
     double Get_Heading();
     void Set_Heading(double heading_);
-    void Change_Brake_Type(char Type);
+    void Change_Brake_Type(Brake_Type Type);
     void driveDistance(double speed, double time);
     void driveDistance(std::vector<double> speed, double time);
     void driveDistance(double inches, double maxPct, Straight_PID_Var variable);

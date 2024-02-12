@@ -18,7 +18,7 @@ void Intake_Out()
 }
 void Run_Auto()
 {
-    Auto_Programs[Auto_Num].Current_Auto;
+    Auto_Programs[1].Current_Auto;
     /*switch (Auto_Num)
     {
     case 1:
@@ -391,5 +391,5 @@ Auto_Info Auto_Programs[] = {
     //-------------------------------------------------
     {"Nothing","Nothing",
     {"Does Nothing"},
-    (void*) Auton_18},
+    (void*) Auton_18}
 };

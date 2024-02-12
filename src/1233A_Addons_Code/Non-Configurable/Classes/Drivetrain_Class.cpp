@@ -142,36 +142,29 @@
         }
     }
    //Changes the Brake Type for the drivetrain {B for Brake C for Coast H for Hold}
-    void Drivetrain::Change_Brake_Type(char Type)
+    void Drivetrain::Change_Brake_Type(Brake_Type Type)
     {
+        pros::motor_brake_mode_e_t prosBrakeType;
         switch (Type)
         {
-        case 'B':
-            for (pros::Motor Motor : leftMotors){
-                Motor.set_brake_mode(MOTOR_BRAKE_BRAKE);
-            }
-            for (pros::Motor Motor : rightMotors){
-                Motor.set_brake_mode(MOTOR_BRAKE_BRAKE);
-            }
+        case BRAKE:
+            prosBrakeType = pros::E_MOTOR_BRAKE_BRAKE;
             break;
-        case 'C':
-            for (pros::Motor Motor : leftMotors){
-                Motor.set_brake_mode(MOTOR_BRAKE_COAST);
-            }
-            for (pros::Motor Motor : rightMotors){
-                Motor.set_brake_mode(MOTOR_BRAKE_COAST);
-            }
+        case COAST:
+            prosBrakeType = pros::E_MOTOR_BRAKE_COAST;
             break;
-        case 'H':
-            for (pros::Motor Motor : leftMotors){
-                Motor.set_brake_mode(MOTOR_BRAKE_HOLD);
-            }
-            for (pros::Motor Motor : rightMotors){
-                Motor.set_brake_mode(MOTOR_BRAKE_HOLD);
-            }
+        case HOLD:
+            prosBrakeType = pros::E_MOTOR_BRAKE_HOLD;
             break;
         default:
+            prosBrakeType = pros::E_MOTOR_BRAKE_COAST;
             break;
+        }
+        for (pros::Motor Motor : leftMotors){
+            Motor.set_brake_mode(prosBrakeType);
+        }
+        for (pros::Motor Motor : rightMotors){
+            Motor.set_brake_mode(prosBrakeType);
         }
     }
     Drivetrain::Straight_PID_Var::Straight_PID_Var() {}
@@ -200,44 +193,53 @@
         pros::delay(time);
         Set_Drivetrain(0,0);
     }
-    void Drivetrain::driveDistance(double inches, double maxPct, Straight_PID_Var variable) {
-    Change_Brake_Type('B');
+    void Drivetrain::driveDistance(double inches, double maxSpeed, Straight_PID_Var variable) {
+    Change_Brake_Type(BRAKE);
     Reset_Motor_Position();
 
-    // Direction handling
-    int direction = (inches < 0) ? -1 : 1;
-    inches = fabs(inches);
-
     // Constants and initial calculations
-    const double target = (inches / (Wheel_Diameter * M_PI)) * 360 * 1.1 * direction;
+    const double target = (inches / (Wheel_Diameter * M_PI)) * 360 * 1.1 ;
+    const double Max = 127; //Max speed for motors
 
     // PID constants, adjust or utilize as passed from the structure
     double kP = variable.kP * (inches < 12 ? 2 : 1);
-    double kI = variable.kI, kD = variable.kD, kA = variable.kA;
+    double kI = variable.kI, kD = variable.kD;
+
+    // P constants for heading correction
+    double kP_heading = variable.kA;
 
     // Initialize encoder readings and PID variables
     double lAvgTicks = 0, rAvgTicks = 0, avgTicks = 0;
     double error = 0, prevError = 0, accumulativeError = 0;
-
+    double headingError = 0;
     while (fabs(avgTicks) < fabs(target)) {
         // Calculate PID output
         double currentPower = error * kP + accumulativeError * kI + (error - prevError) * kD;
-        currentPower = std::min(std::max(currentPower, 5.0), maxPct); // Constrain power within bounds
+        currentPower = std::clamp(currentPower,-maxSpeed,maxSpeed);// Constrain power within max
+        
+        // Calculate heading error and correction
+        headingError = fmod((Target_Heading-Get_Heading()+540.0), 360.0)-180.0;
 
-        // Alignment adjustment
-        double alignErr = fabs(lAvgTicks - rAvgTicks) * kA;
-        double lPower = currentPower - (lAvgTicks > rAvgTicks ? alignErr : 0);
-        double rPower = currentPower - (rAvgTicks > lAvgTicks ? alignErr : 0);
+        // Simple proportional correction for heading
+        double headingCorrection = headingError * kP_heading;
+
+        // Apply heading correction to motor powers
+        double lPower = currentPower + headingCorrection;
+        double rPower = currentPower - headingCorrection;
+
+        // Constrain Power to highest and lowest power of motors
+        lPower = std::clamp(lPower,-Max,Max);
+        rPower = std::clamp(rPower,-Max,Max);
 
         // Apply direction and set motor powers
-        Set_Drivetrain(lPower * direction, rPower * direction);
+        Set_Drivetrain(lPower, rPower);
 
         // Update encoders and error for next iteration
-        lAvgTicks = fabs(Get_Position('l'));
-        rAvgTicks = fabs(Get_Position('r'));
+        lAvgTicks = Get_Position('l');
+        rAvgTicks = Get_Position('r');
         avgTicks = (lAvgTicks + rAvgTicks) / 2;
         prevError = error;
-        error = target - avgTicks * direction; // Adjust for direction
+        error = target - avgTicks; // Adjust for direction
 
         // Reset accumulative error under specific conditions
         if(fabs(error) < 0.5 || fabs(error) > 150) accumulativeError = 0;
@@ -246,11 +248,12 @@
         pros::delay(10); // Delay to save resources
     }
 
-    Reset_Motor_Position(); // Reset motors and encoders at the end
+    Reset_Motor_Position(); // Reset motors encoders at the end
     }
     void Drivetrain::Turn(double angle, double maxTurnSp, Turn_PID_Var variable) {
         Reset_Motor_Position();
-        Change_Brake_Type('B');
+        Change_Brake_Type(BRAKE);
+        Target_Heading = angle;
         // Determine which way to turn
         double shortestAngle = fmod((angle-Get_Heading()+540.0), 360.0)-180.0;
         double prevShortestAngle = shortestAngle;

@@ -17,7 +17,7 @@ struct Auto_Info
 extern Auto_Info Auto_Programs[];
 
 void Run_Auto();
-/*void Auton_1();
+void Auton_1();
 void Auton_2();
 void Auton_3();
 void Auton_4();
@@ -34,5 +34,5 @@ void Auton_14();
 void Auton_15();
 void Auton_16();
 void Auton_17();
-void Auton_18();*/
+void Auton_18();
 void Marco_Skills();

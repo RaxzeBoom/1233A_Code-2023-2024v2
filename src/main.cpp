@@ -60,7 +60,8 @@ void competition_initialize() {}
  * from where it left off.
  */ 
 void autonomous() {
-	Run_Auto();
+	Auto_Programs[1].Current_Auto;
+	//Run_Auto();
 	//Auton_1();
 }
 
@@ -86,7 +87,7 @@ void GUI_Updater(void* param)
 void opcontrol() {
 	Catapult.set_brake_mode(MOTOR_BRAKE_COAST);
 	pros::Task  GUI_Update(GUI_Updater);
-	drivetrain.Change_Brake_Type('C');
+	drivetrain.Change_Brake_Type(Drivetrain::COAST);
 	while (true) {
 		
 		Marco_Skills();

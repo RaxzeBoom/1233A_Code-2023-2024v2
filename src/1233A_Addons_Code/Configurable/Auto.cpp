@@ -18,8 +18,8 @@ void Intake_Out()
 }
 void Run_Auto()
 {
-    Auto_Programs[1].Current_Auto;
-    /*switch (Auto_Num)
+    //Auto_Programs[1].Current_Auto;
+    switch (Auto_Num)
     {
     case 1:
         Auton_1();
@@ -77,7 +77,7 @@ void Run_Auto()
         break;
     default:
         break;
-    }*/
+    }
 }
 
 void Marco_Skills()
@@ -215,7 +215,9 @@ void Auton_13()
     drivetrain.driveDistance(-18,90,Alfa_Straight);
     drivetrain.Turn(110,100,Alfa_Turn);
     drivetrain.driveDistance(-1,100,Alfa_Straight);
+    wings.Out();
     MutiShootCata(47, 126);
+    wings.In();
     drivetrain.Turn(0,100,Alfa_Turn);
     drivetrain.driveDistance(28,90,Alfa_Straight);
     drivetrain.Turn(315,60,Alfa_Turn);

@@ -60,8 +60,8 @@ void competition_initialize() {}
  * from where it left off.
  */ 
 void autonomous() {
-	Auto_Programs[1].Current_Auto;
-	//Run_Auto();
+	//Auto_Programs[1].Current_Auto;
+	Run_Auto();
 	//Auton_1();
 }
 

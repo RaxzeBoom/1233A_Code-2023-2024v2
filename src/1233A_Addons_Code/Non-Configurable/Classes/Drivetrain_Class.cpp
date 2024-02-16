@@ -192,6 +192,7 @@
         pros::delay(time);
         Set_Drivetrain(0,0);
     }
+
     void Drivetrain::driveDistance(double inches, double maxSpeed, Straight_PID_Var variable) {
     Change_Brake_Type(BRAKE);
     Reset_Motor_Position();
@@ -249,67 +250,53 @@
 
     Reset_Motor_Position(); // Reset motors encoders at the end
     }
-    void Drivetrain::Turn(double angle, double maxTurnSp, Turn_PID_Var variable) {
-        Reset_Motor_Position();
-        Change_Brake_Type(BRAKE);
-        Target_Heading = angle;
-        // Determine which way to turn
-        double shortestAngle = fmod((angle-Get_Heading()+540.0), 360.0)-180.0;
-        double prevShortestAngle = shortestAngle;
-        double totAccumAngle = 0.0;
-        // PID Variables
-        const double kP = variable.kP;
-        const double kI = variable.kI;
-        const double kD = variable.kD;
-        int Counter = 0;
-        double targetSpeed = 0.0;
-        double currentSpeed = 0.0;
-        double speed = 0.0;
-        while (true) { // Exit the loop if the angle is within the margin of error and the speed is below 5 (Speed cutoff prevents overshoot)
-            targetSpeed = fabs(shortestAngle) * kP + fabs(totAccumAngle) * kI + (fabs(shortestAngle)-fabs(prevShortestAngle)) * kD; // Multiplies the shortest angle by 100 divided by the initial calculated shortest angle so that the drive starts at 100 and will gradually get lower as the target is neared
-            currentSpeed = (Get_RPM('l') + Get_RPM('r'))/2;
+    void Drivetrain::Turn(double angle, double maxTurnSpeed, Turn_PID_Var variable) {
+    Reset_Motor_Position();
+    Change_Brake_Type(BRAKE);
+    Target_Heading = angle;
 
-            // End the loop if the angle and speed show that we are basically there so stalls dont happen
-            if (fabs(shortestAngle) < 0.80 && currentSpeed < .8) {
-            Counter++;
+    // Calculate the shortest path to the target angle
+    double currentAngle = Get_Heading();
+    double shortestAngle = fmod((angle - currentAngle + 540.0), 360.0) - 180.0;
+    double prevShortestAngle = shortestAngle;
+    double totalAccumulatedAngleError = 0.0;
+
+    // PID Coefficients
+    const double kP = variable.kP;
+    const double kI = variable.kI;
+    const double kD = variable.kD;
+
+    while (true) {
+        // Calculate target speed based on PID formula
+        double targetSpeed = fabs(shortestAngle) * kP + totalAccumulatedAngleError * kI + (fabs(shortestAngle) - fabs(prevShortestAngle)) * kD;
+
+        // Apply passive power if needed
+        if (variable.Passive_Power) {
+            targetSpeed = (targetSpeed > 0) ? fmax(targetSpeed, 17) : fmin(targetSpeed, -17);
+        }
+
+        // Adjust drivetrain speed based on the sign of the angle
+        Set_Drivetrain((shortestAngle < 0) ? -targetSpeed : targetSpeed, (shortestAngle < 0) ? targetSpeed : -targetSpeed);
+
+        // Update for next iteration
+        prevShortestAngle = shortestAngle;
+        currentAngle = Get_Heading();
+        shortestAngle = fmod((angle - currentAngle + 540.0), 360.0) - 180.0;
+        totalAccumulatedAngleError += fabs(shortestAngle);
+
+        // Reset total accumulated angle error if too far or it overshoots to prevent integral windup
+        if (fabs(shortestAngle) < 0.5 || fabs(shortestAngle) > 15) {
+            totalAccumulatedAngleError = 0;
+        }
+
+        // Exit condition: angle is within tolerance and drivetrain speed is sufficiently low
+        double currentSpeed = (Get_RPM('l') + Get_RPM('r')) / 2;
+        if (fabs(shortestAngle) < 0.80 && currentSpeed < 0.8) {
             Reset_Motor_Position();
             return;
-            }
-            if(variable.Passive_Power == true){
-                if(targetSpeed > 0){
-                    targetSpeed = fmax(targetSpeed, 17);
-                } else{
-                    targetSpeed = fmin(targetSpeed, -17);
-                }
-            }
-            if (shortestAngle < 0) { // Negative = counterclockwise (left turn)
-            Set_Drivetrain(-targetSpeed,targetSpeed);
-            } else if (shortestAngle > 0) { // Positive = clockwise (right turn)
-            Set_Drivetrain(targetSpeed,-targetSpeed);
-            } else { // Default to not turn if there is an error
-
-            }
-            controller.print(1,1,"%f \n", Get_Heading());
-            Get_Heading(); // Current heading - updated every iteration
-
-            prevShortestAngle = shortestAngle;
-            shortestAngle = fmod((angle-Get_Heading()+540.0), 360.0)-180.0;
-
-            if (fabs(shortestAngle)-fabs(prevShortestAngle) > 15) // make sure that the angle doesnt change by more than 30 each iteration (to prevent accidental turn around)
-            shortestAngle = prevShortestAngle;
-
-            totAccumAngle += fabs(shortestAngle);
-            if(fabs(shortestAngle) < .5)
-            {
-                totAccumAngle = 0;
-            }
-            if(fabs(shortestAngle) > 15)
-            {
-                totAccumAngle = 0;
-            }
-            pros::delay(10); // Save resources
         }
-        Reset_Motor_Position();
-        //return;
 
+        // Save resources
+        pros::delay(10);
+    }
 }

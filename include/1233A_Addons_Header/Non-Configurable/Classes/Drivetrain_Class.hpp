@@ -53,7 +53,7 @@ class Drivetrain {
     void driveDistance(double speed, double time);
     void driveDistance(std::vector<double> speed, double time);
     void driveDistance(double inches, double maxPct, Straight_PID_Var variable);
-    void Turn(double angle, double maxTurnSp, Turn_PID_Var variable);
+    void Turn(double angle, double maxTurnSpeed, Turn_PID_Var variable);
 };
 
 

@@ -25,7 +25,7 @@ void setCatapultMotors()
     {
         Catapultpower = Driver_Catapult_Speed;
         CataStop = 1;
-        Setcataport(Catapultpower);
+        Catapult.move_velocity(130);
     }
     else
     {
@@ -33,7 +33,7 @@ void setCatapultMotors()
         {
             Catapultpower = 0;
             CataStop = 0;
-            Setcataport(Catapultpower);
+            Catapult.move_velocity(0);
         }
     }
 }

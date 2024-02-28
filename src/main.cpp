@@ -26,7 +26,7 @@ void initialize() {
 	rotation_sensor.reset_position();
 	rotation_sensor.reset();
 	rotation_sensor.set_position(1000);
-	pros::Task  Catapult_Shoot(Catapult_Shooter);
+	//pros::Task  Catapult_Shoot(Catapult_Shooter);
 
 }
 
@@ -85,7 +85,7 @@ void GUI_Updater(void* param)
 }
 //extern pros::Task RPM_Task;
 void opcontrol() {
-	Catapult.set_brake_mode(MOTOR_BRAKE_COAST);
+	Catapult.set_brake_modes(MOTOR_BRAKE_COAST);
 	pros::Task  GUI_Update(GUI_Updater);
 	drivetrain.Change_Brake_Type(Drivetrain::COAST);
 	while (true) {
@@ -94,6 +94,8 @@ void opcontrol() {
 		drivetrain.Driver_Control();
 		setCatapultMotors();
 		Driver_Intake();
+		Back_Right_wing.Control();
+		Back_Left_wing.Control();
 		wings.Control();
 		hang.Control();
 		pros::delay(20);

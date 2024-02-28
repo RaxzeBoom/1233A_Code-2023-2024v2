@@ -35,11 +35,11 @@
     void Drivetrain::Driver_Control()
     {
         if(Drivetype == false){Tank_Control();} else{Arcade_Control();}
-        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN))
+        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT))
         {
           if(Drivetype == false) {Drivetype = true;}
           else {Drivetype = false;}
-          while((controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN))){
+          while((controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT))){
              pros::delay(10);
           } 
         }
@@ -71,6 +71,7 @@
     //Resets the Motor positions while stoping them
     void Drivetrain::Reset_Motor_Position()
     {
+
         for (pros::Motor Motor : leftMotors)
         {
             Motor.brake();
@@ -192,7 +193,6 @@
         pros::delay(time);
         Set_Drivetrain(0,0);
     }
-
     void Drivetrain::driveDistance(double inches, double maxSpeed, Straight_PID_Var variable) {
     Change_Brake_Type(BRAKE);
     Reset_Motor_Position();

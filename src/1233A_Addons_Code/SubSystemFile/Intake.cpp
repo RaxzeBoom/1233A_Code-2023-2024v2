@@ -11,10 +11,10 @@ void StopIntake()
 void Driver_Intake() {
     int Intakepower = 0;
     if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
-        Intakepower =Driver_Intake_Speed;
+        Intakepower = Driver_Intake_Speed;
     }
     else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-        Intakepower =Driver_Intake_Speed*-1;
+        Intakepower = Driver_Intake_Speed*-1;
     }
     SetIntake(Intakepower);
 }

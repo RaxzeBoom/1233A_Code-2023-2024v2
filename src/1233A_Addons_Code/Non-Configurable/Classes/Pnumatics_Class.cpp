@@ -41,6 +41,10 @@
         }
         Combos = Button_Combo;
         reverse = reverse_;
+        for (size_t i = 0; i < Combos.size(); i++)
+        {
+            Combos[i].state = i;
+        }
         Driver_Vector_Used = true;
     }
     
@@ -105,33 +109,40 @@
             }
         }
     }
-    void Pnumatics::Toggle(Button_Com C)
+    void Pnumatics::Toggle(Button_Com Pnumatics)
     {
-        for (pros::ADIDigitalOut Pnumatic : Pnumatic_List)
-        {
-            if(C.toggle){
-                In(C.Num);
-            }else{
-                Out(C.Num);
-            }
+        if(Pnumatics.state){
+            In(Pnumatics.Num);
+            Combos[Pnumatics.order].state = false;
+        }else{
+            Out(Pnumatics.Num);
+            Combos[Pnumatics.order].state = true;
         }
     }
     void Pnumatics::Control()
     {
         if(Driver_Used == true)
         {
-            if(controller.get_digital(Button_List[0])){
+            if(controller.get_digital(Button_List[0]) & Button_State == false){
                 Toggle();
+                Button_State = true;
             }
-            while(controller.get_digital(Button_List[0])){
-                pros::delay(10);
+            if(!controller.get_digital(Button_List[0]))
+            {
+                Button_State = false;
             }
         } else if(Driver_Vector_Used == true)
         {
-            for (Button_Com Combo : Combos)
+            for(Button_Com Pistons : Combos)
             {
-                
+                if(controller.get_digital(Pistons.But) & Combos[Pistons.order].but_state == false){
+                Toggle(Pistons);
+                Combos[Pistons.order].but_state = true;
+                }
+                if(!controller.get_digital(Pistons.But))
+                {
+                    Combos[Pistons.order].but_state = false;
+                }
             }
-            
         }
     }

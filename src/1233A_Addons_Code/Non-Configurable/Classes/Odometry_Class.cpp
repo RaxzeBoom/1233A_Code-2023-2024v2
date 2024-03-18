@@ -11,7 +11,6 @@
         while (true)
         {
             
-
             double local_x;
             double local_y;
             

@@ -8,7 +8,7 @@ public:
         double X;
         double Y;
     };
-    Point Position{0,0};
+    Point Position = {0,0};
 
 private:
     Drivetrain* Bot;

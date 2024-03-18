@@ -1,9 +1,5 @@
 #include "main.h"
 
-//Define Drivetrain & pnumatics here
-
-
-//---------------------------------------------------------
 
 
 void UI_Touch() {
@@ -11,22 +7,12 @@ void UI_Touch() {
 	 pros::screen::set_pen(COLOR_GREEN);
 	 Touch_Checker(status.x, status.y);
  }
-void Catapult_Shooter(void* param) {
-     while(true){
-      Driver_AutoCatapult();
-	  pros::delay(20);
-     }
- }
 void initialize() {
 	
 	pros::delay(300); 
 	Start_UI();
 	drivetrain.Initialize();
 	pros::screen::touch_callback(UI_Touch, TOUCH_PRESSED);
-	rotation_sensor.reset_position();
-	rotation_sensor.reset();
-	rotation_sensor.set_position(1000);
-	//pros::Task  Catapult_Shoot(Catapult_Shooter);
 
 }
 
@@ -61,8 +47,8 @@ void competition_initialize() {}
  */ 
 void autonomous() {
 	//Auto_Programs[1].Current_Auto;
-	Run_Auto();
-	//Auton_1();
+	//Run_Auto();
+	Auton_7();
 }
 
 /**
@@ -86,7 +72,7 @@ void GUI_Updater(void* param)
 //extern pros::Task RPM_Task;
 void opcontrol() {
 	Catapult.set_brake_modes(MOTOR_BRAKE_COAST);
-	pros::Task  GUI_Update(GUI_Updater);
+	//pros::Task  GUI_Update(heading_tracker);
 	drivetrain.Change_Brake_Type(Drivetrain::COAST);
 	while (true) {
 		
@@ -94,10 +80,11 @@ void opcontrol() {
 		drivetrain.Driver_Control();
 		setCatapultMotors();
 		Driver_Intake();
-		Back_Right_wing.Control();
-		Back_Left_wing.Control();
+		MutiShootCataControl(48 , 150  ,pros::E_CONTROLLER_DIGITAL_UP);
 		wings.Control();
 		hang.Control();
+		back_left_wing.Control();
+		back_right_wing.Control();
 		pros::delay(20);
 
 	}

@@ -19,6 +19,11 @@
             motor.move(speed);
         }
     }
+    void Drivetrain::Set_Drive_Motors_Vel(std::vector<pros::Motor>& motors, double speed) {
+        for (pros::Motor motor : motors) {
+            motor.move_velocity(speed*(600/127));
+        }
+    }
     //Give basic tank drive in driver control
     void Drivetrain::Tank_Control()
     {
@@ -61,6 +66,11 @@
     {
         Set_Drive_Motors(leftMotors , Left_Side_Speed);
         Set_Drive_Motors(rightMotors , Right_Side_Speed);
+    }
+    void Drivetrain::Set_Drivetrain_Vel(double Left_Side_Speed, double Right_Side_Speed)
+    {
+        Set_Drive_Motors_Vel(leftMotors , Left_Side_Speed);
+        Set_Drive_Motors_Vel(rightMotors , Right_Side_Speed);
     }
     //Runs basic commands for drivetrain
     void Drivetrain::Initialize(){
@@ -183,13 +193,20 @@
         kD = kD_;
         Passive_Power = Passive_Power_;
     };
+    Drivetrain::Swing_PID_Var::Swing_PID_Var() {}
+    Drivetrain::Swing_PID_Var::Swing_PID_Var(double kP_, double kI_, double kD_)
+    {
+        kP = kP_;
+        kI = kI_;
+        kD = kD_;
+    };
     void Drivetrain::driveDistance(double speed, double time){
         Set_Drivetrain(speed,speed);
         pros::delay(time);
         Set_Drivetrain(0,0);
     }
     void Drivetrain::driveDistance(std::vector<double> speed, double time){
-        Set_Drivetrain(speed.at(0),speed.at(1));
+        Set_Drivetrain_Vel(speed.at(0),speed.at(1));
         pros::delay(time);
         Set_Drivetrain(0,0);
     }
@@ -198,7 +215,7 @@
     Reset_Motor_Position();
 
     // Constants and initial calculations
-    const double target = (inches / (Wheel_Diameter * M_PI)) * 360 * 1.1 ;
+    const double target = (inches / (Wheel_Diameter * M_PI)) * 360 * 1.1;
     const double Max = 127; //Max speed for motors
 
     // PID constants, adjust or utilize as passed from the structure
@@ -247,7 +264,64 @@
 
         pros::delay(10); // Delay to save resources
     }
+    pros::delay(100);
+    Reset_Motor_Position(); // Reset motors encoders at the end
+    }
+    void Drivetrain::driveDistance_Vel(double inches, double maxSpeed, Straight_PID_Var variable) {
+    Change_Brake_Type(BRAKE);
+    Reset_Motor_Position();
 
+    // Constants and initial calculations
+    const double target = (inches / (Wheel_Diameter * M_PI)) * 360 * 1.1;
+    const double Max = 127; //Max speed for motors
+
+    // PID constants, adjust or utilize as passed from the structure
+    double kP = variable.kP * (inches < 12 ? 2 : 1);
+    double kI = variable.kI, kD = variable.kD;
+
+    // P constants for heading correction
+    double kP_heading = variable.kA;
+
+    // Initialize encoder readings and PID variables
+    double lAvgTicks = 0, rAvgTicks = 0, avgTicks = 0;
+    double error = 0, prevError = 0, accumulativeError = 0;
+    double headingError = 0;
+    while (fabs(avgTicks) < fabs(target)) {
+        // Calculate PID output
+        double currentPower = error * kP + accumulativeError * kI + (error - prevError) * kD;
+        currentPower = std::clamp(currentPower,-maxSpeed,maxSpeed);// Constrain power within max
+        
+        // Calculate heading error and correction
+        headingError = fmod((Target_Heading-Get_Heading()+540.0), 360.0)-180.0;
+
+        // Simple proportional correction for heading
+        double headingCorrection = headingError * kP_heading;
+
+        // Apply heading correction to motor powers
+        double lPower = currentPower + headingCorrection;
+        double rPower = currentPower - headingCorrection;
+
+        // Constrain Power to highest and lowest power of motors
+        lPower = std::clamp(lPower,-Max,Max);
+        rPower = std::clamp(rPower,-Max,Max);
+
+        // Apply direction and set motor powers
+        Set_Drivetrain_Vel(lPower, rPower);
+
+        // Update encoders and error for next iteration
+        lAvgTicks = Get_Position('l');
+        rAvgTicks = Get_Position('r');
+        avgTicks = (lAvgTicks + rAvgTicks) / 2;
+        prevError = error;
+        error = target - avgTicks; // Adjust for direction
+
+        // Reset accumulative error under specific conditions
+        if(fabs(error) < 0.5 || fabs(error) > 150) accumulativeError = 0;
+        else accumulativeError += error;
+
+        pros::delay(10); // Delay to save resources
+    }
+    pros::delay(100);
     Reset_Motor_Position(); // Reset motors encoders at the end
     }
     void Drivetrain::Turn(double angle, double maxTurnSpeed, Turn_PID_Var variable) {
@@ -276,7 +350,7 @@
         }
 
         // Adjust drivetrain speed based on the sign of the angle
-        Set_Drivetrain((shortestAngle < 0) ? -targetSpeed : targetSpeed, (shortestAngle < 0) ? targetSpeed : -targetSpeed);
+        Set_Drivetrain_Vel((shortestAngle < 0) ? -targetSpeed : targetSpeed, (shortestAngle < 0) ? targetSpeed : -targetSpeed);
 
         // Update for next iteration
         prevShortestAngle = shortestAngle;
@@ -290,9 +364,12 @@
         }
 
         // Exit condition: angle is within tolerance and drivetrain speed is sufficiently low
-        double currentSpeed = (Get_RPM('l') + Get_RPM('r')) / 2;
-        if (fabs(shortestAngle) < 0.80 && currentSpeed < 0.8) {
+        double currentSpeed = fabs((Get_RPM('l') + Get_RPM('r')) / 2);
+        controller.print(2,2,"%3f",Get_Heading());
+        controller.print(1,2,"%3f",currentSpeed);
+        if (fabs(shortestAngle) < 1.2 & currentSpeed < 5) {
             Reset_Motor_Position();
+            pros::delay(50);
             return;
         }
 
@@ -300,3 +377,110 @@
         pros::delay(10);
     }
 }
+void Drivetrain::Turn(double angle, double maxTurnSpeed, Turn_PID_Var variable , double headingTol , double speedTol) {
+    Reset_Motor_Position();
+    Change_Brake_Type(BRAKE);
+    Target_Heading = angle;
+
+    // Calculate the shortest path to the target angle
+    double currentAngle = Get_Heading();
+    double shortestAngle = fmod((angle - currentAngle + 540.0), 360.0) - 180.0;
+    double prevShortestAngle = shortestAngle;
+    double totalAccumulatedAngleError = 0.0;
+
+    // PID Coefficients
+    const double kP = variable.kP;
+    const double kI = variable.kI;
+    const double kD = variable.kD;
+
+    while (true) {
+        // Calculate target speed based on PID formula
+        double targetSpeed = fabs(shortestAngle) * kP + totalAccumulatedAngleError * kI + (fabs(shortestAngle) - fabs(prevShortestAngle)) * kD;
+
+        // Apply passive power if needed
+        if (variable.Passive_Power) {
+            targetSpeed = (targetSpeed > 0) ? fmax(targetSpeed, 17) : fmin(targetSpeed, -17);
+        }
+
+        // Adjust drivetrain speed based on the sign of the angle
+        Set_Drivetrain_Vel((shortestAngle < 0) ? -targetSpeed : targetSpeed, (shortestAngle < 0) ? targetSpeed : -targetSpeed);
+
+        // Update for next iteration
+        prevShortestAngle = shortestAngle;
+        currentAngle = Get_Heading();
+        shortestAngle = fmod((angle - currentAngle + 540.0), 360.0) - 180.0;
+        totalAccumulatedAngleError += fabs(shortestAngle);
+
+        // Reset total accumulated angle error if too far or it overshoots to prevent integral windup
+        if (fabs(shortestAngle) < 0.5 || fabs(shortestAngle) > 15) {
+            totalAccumulatedAngleError = 0;
+        }
+
+        // Exit condition: angle is within tolerance and drivetrain speed is sufficiently low
+        double currentSpeed = fabs((Get_RPM('l') + Get_RPM('r')) / 2);
+        controller.print(2,2,"%3f",Get_Heading());
+        controller.print(1,2,"%3f",currentSpeed);
+        if (fabs(shortestAngle) < headingTol & currentSpeed < speedTol) {
+            Reset_Motor_Position();
+            pros::delay(50);
+            return;
+        }
+
+        // Save resources
+        pros::delay(10);
+    }
+}
+    void Drivetrain::Swing(double angle, double maxTurnSpeed, char side, Swing_PID_Var variable) {
+        Reset_Motor_Position();
+        Change_Brake_Type(BRAKE);
+        Target_Heading = angle;
+
+        // Calculate the shortest path to the target angle
+        double currentAngle = Get_Heading();
+        double shortestAngle = fmod((angle - currentAngle + 540.0), 360.0) - 180.0;
+        double prevShortestAngle = shortestAngle;
+        double totalAccumulatedAngleError = 0.0;
+
+        // PID Coefficients
+        const double kP = variable.kP;
+        const double kI = variable.kI;
+        const double kD = variable.kD;
+
+        while (true) {
+            // Calculate target speed based on PID formula
+            double targetSpeed = fabs(shortestAngle) * kP + totalAccumulatedAngleError * kI + (fabs(shortestAngle) - fabs(prevShortestAngle)) * kD;
+
+            // Adjust drivetrain speed based on the sign of the angle
+            if(side == 'l'){
+            Set_Drivetrain_Vel((shortestAngle < 0) ? -targetSpeed : targetSpeed,0); 
+            }else{
+                Set_Drivetrain_Vel(0, (shortestAngle < 0) ? targetSpeed : -targetSpeed);
+            }
+            
+
+            // Update for next iteration
+            prevShortestAngle = shortestAngle;
+            currentAngle = Get_Heading();
+            shortestAngle = fmod((angle - currentAngle + 540.0), 360.0) - 180.0;
+            totalAccumulatedAngleError += fabs(shortestAngle);
+
+            // Reset total accumulated angle error if too far or it overshoots to prevent integral windup
+            if (fabs(shortestAngle) < 0.5 || fabs(shortestAngle) > 15) {
+                totalAccumulatedAngleError = 0;
+            }
+
+            // Exit condition: angle is within tolerance and drivetrain speed is sufficiently low
+            double currentSpeed = fabs((Get_RPM('l') + Get_RPM('r')) / 2);
+            controller.print(2,2,"%3f",Get_Heading());
+            controller.print(1,2,"%3f",currentSpeed);
+            if (fabs(shortestAngle) < 1.2 & currentSpeed < 2) {
+                Reset_Motor_Position();
+                pros::delay(50);
+                return;
+            }
+
+            // Save resources
+            pros::delay(10);
+        }
+    }
+

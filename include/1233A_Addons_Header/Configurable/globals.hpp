@@ -10,6 +10,6 @@ extern pros::Rotation rotation_sensor;
 //Class Setups here
 extern Drivetrain drivetrain;
 extern Pnumatics wings;
-extern Pnumatics Back_Right_wing;
-extern Pnumatics Back_Left_wing;
 extern Pnumatics hang;
+extern Pnumatics back_left_wing;
+extern Pnumatics back_right_wing;
